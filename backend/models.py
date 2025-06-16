@@ -15,7 +15,7 @@ class Profile(db.Model):
     password = db.Column(db.String(255), nullable=False)
     course = db.Column(db.String(100), nullable=False)
     year = db.Column(db.Integer, nullable=False)
-    gender = db.Column(db.Enum("Male", "Female", "Other"), nullable=False)
+    gender = db.Column(db.Enum("Male", "Female", "Other", name="gender_enum"), nullable=False)
     tele = db.Column(db.String(20), nullable=False, unique=True)
 
 class StudySession(db.Model):

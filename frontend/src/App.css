@@ -1,42 +1,39 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import Home from './sections/Home';
-import CreateGroup from './sections/CreateGroup';
-import Profile from './sections/Profile';
-import Notification from './sections/Notification';
-import MyGroups from './sections/MyGroups';
-import RegisterAccount from './sections/RegisterAccount';
-import './App.css';
-
-function TopNav() {
-  const navigate = useNavigate();
-  return (
-    <nav className="top-nav">
-      <button onClick={() => navigate('/home')}>Home</button>
-      <button onClick={() => navigate('/create-group')}>Create Group</button>
-      <button onClick={() => navigate('/profile')}>Profile</button>
-      <button onClick={() => navigate('/notification')}>Notification</button>
-      <button onClick={() => navigate('/my-groups')}>My Groups</button>
-      <button onClick={() => navigate('/register')}>Register</button>
-    </nav>
-  );
+.top-nav {
+  display: flex;
+  align-items: center;
+  background-color: #373b40;
+  padding: 0 32px;
+  height: 56px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
 }
 
-function App() {
-  return (
-    <Router>
-      <TopNav />
-      <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/create-group" element={<CreateGroup />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/notification" element={<Notification />} />
-        <Route path="/my-groups" element={<MyGroups />} />
-        <Route path="/register" element={<RegisterAccount />} />
-      </Routes>
-    </Router>
-  );
+.top-nav button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  margin-right: 32px;
+  cursor: pointer;
+  padding: 0;
+  height: 100%;
+  transition: color 0.2s;
 }
 
-export default App;
+.top-nav button:hover {
+  color: #7ec3fa;
+  text-decoration: underline;
+}
+
+.top-nav .logo {
+  font-weight: bold;
+  font-size: 22px;
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.top-nav .logo-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+}

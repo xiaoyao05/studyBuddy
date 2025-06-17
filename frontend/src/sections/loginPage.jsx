@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import httpClient from "./httpClient";
+import httpClient from "../httpClient";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");

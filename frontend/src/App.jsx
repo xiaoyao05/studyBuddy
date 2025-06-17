@@ -6,6 +6,8 @@ import Profile from './sections/Profile';
 import Notification from './sections/Notification';
 import MyGroups from './sections/MyGroups';
 import RegisterAccount from './sections/RegisterAccount';
+import LoginPage from './sections/loginPage';
+import './index.css'
 import './App.css';
 
 function TopNav() {
@@ -18,6 +20,7 @@ function TopNav() {
       <button onClick={() => navigate('/notification')}>Notification</button>
       <button onClick={() => navigate('/my-groups')}>My Groups</button>
       <button onClick={() => navigate('/register')}>Register</button>
+      <button onClick={() => navigate('/login')}>Login</button>
     </nav>
   );
 }
@@ -34,6 +37,7 @@ function App() {
         <Route path="/notification" element={<Notification />} />
         <Route path="/my-groups" element={<MyGroups />} />
         <Route path="/register" element={<RegisterAccount />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
   );

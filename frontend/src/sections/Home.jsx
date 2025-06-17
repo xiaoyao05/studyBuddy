@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const GroupFilterPage = () => {
+  const navigate = useNavigate();
   // Sample group data
   const [allGroups, setAllGroups] = useState([
     // {
@@ -11,8 +13,39 @@ const GroupFilterPage = () => {
     //   participants: '',
     //   course: '',
     //   module: '',
-    //   members: ['user1', 'user2']
+    //   members: ['user1', 'user2'],
+    //   host: ''
     // }
+    {
+      id: 1,
+      name: 'Study Group A',
+      location: 'Library',
+      date: '2023-10-15',
+      participants: '3/5',
+      course: 'Computer Science',
+      module: 'Algorithms',
+      members: ['user1', 'user2', 'user3'],
+      host: {  // Add host object
+        id: 'user1',
+        name: 'John Doe',
+        telegramHandle: 'johndoe123'
+      }
+    },
+    {
+      id: 2,
+      name: 'Math Study Group',
+      location: 'Cafeteria',
+      date: '2023-10-16',
+      participants: '5/5',
+      course: 'Mathematics',
+      module: 'Calculus',
+      members: ['user4', 'user5', 'user6', 'user7', 'user8'],
+      host: {  // Add host object
+        id: 'user4', 
+        name: 'Jane Smith',
+        telegramHandle: 'janesmith456'
+      }
+    },
   ]);
 
   // State for filters
@@ -122,6 +155,11 @@ const GroupFilterPage = () => {
     alert('Your request has been submitted successfully!');
   };
 
+  const viewHostProfile = (hostId) => {
+  navigate(`/profile/${hostId}`, { state: { viewOnly: true } });
+};
+
+
   return (
     <div className="group-filter-page">
       <h1>Find Groups</h1>
@@ -225,10 +263,17 @@ const GroupFilterPage = () => {
                   <p>📅 {group.date}</p>
                   <p>👥 {group.participants} participants</p>
                   <p>📚 {group.course} - {group.module}</p>
+                  <p> 🧑‍💼 Host: {' '}
+                    <span 
+                      className="host-link"
+                      onClick={() => viewHostProfile(group.host.id)}
+                    >
+                      {group.host.name}
+                    </span>
+                  </p>
                   
                   {/* NEW: Action buttons container */}
                   <div className="group-actions">
-                    <button className="view-btn">View Details</button>
                     <button 
                       className={`join-btn ${!canJoin ? 'disabled' : ''}`}
                       onClick={() => canJoin && handleJoinGroup(group.id)}

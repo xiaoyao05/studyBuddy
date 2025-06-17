@@ -126,6 +126,7 @@ const ProfileSetup = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const telegramRegex = /^[a-zA-Z0-9_]{5,}$/;
 
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email) {
@@ -144,7 +145,11 @@ const ProfileSetup = () => {
     if (!formData.course) newErrors.course = 'Course is required';
     if (!formData.year) newErrors.year = 'Year is required';
     if (!formData.gender) newErrors.gender = 'Gender is required';
-
+    if (!formData.telegramHandle) {
+    newErrors.telegramHandle = 'Telegram handle is required';
+  } else if (!telegramRegex.test(formData.telegramHandle)) {
+    newErrors.telegramHandle = 'Please enter a valid Telegram handle';
+  }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -214,59 +219,59 @@ const ProfileSetup = () => {
 
         {/* Combined Course Field */}
         <div className={`form-group ${errors.course ? 'error' : ''}`}>
-  <label>Course *</label>
-  <div className="searchable-dropdown" ref={courseInputRef}>
-    <input
-      type="text"
-      value={formData.course}
-      onChange={(e) => {
-        setFormData({...formData, course: e.target.value});
-        setShowCourseDropdown(true);
-      }}
-      onFocus={() => setShowCourseDropdown(true)}
-      placeholder="Type or select your course"
-    />
-    <button 
-      type="button" 
-      className="dropdown-toggle"
-      onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-      aria-label="Toggle course dropdown"
-    >
-      ▼
-    </button>
-    
-    {showCourseDropdown && (
-      <div className="dropdown-options" ref={courseDropdownRef}>
-        {courses
-          .filter(course => 
-            course.toLowerCase().includes(formData.course.toLowerCase())
-          )
-          .map(course => (
-            <div
-              key={course}
-              className="dropdown-option"
-              onClick={() => {
-                setFormData({...formData, course});
-                setShowCourseDropdown(false);
-                setErrors(prev => ({...prev, course: ''}));
+          <label>Course *</label>
+          <div className="searchable-dropdown" ref={courseInputRef}>
+            <input
+              type="text"
+              value={formData.course}
+              onChange={(e) => {
+                setFormData({...formData, course: e.target.value});
+                setShowCourseDropdown(true);
               }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setFormData({...formData, course});
-                  setShowCourseDropdown(false);
-                }
-              }}
-              tabIndex={0}
+              onFocus={() => setShowCourseDropdown(true)}
+              placeholder="Type or select your course"
+            />
+            <button 
+              type="button" 
+              className="dropdown-toggle"
+              onClick={() => setShowCourseDropdown(!showCourseDropdown)}
+              aria-label="Toggle course dropdown"
             >
-              {course}
-            </div>
-          ))
-        }
-      </div>
-    )}
-  </div>
-  {errors.course && <span className="error-message">{errors.course}</span>}
-</div>
+              ▼
+            </button>
+            
+            {showCourseDropdown && (
+              <div className="dropdown-options" ref={courseDropdownRef}>
+                {courses
+                  .filter(course => 
+                    course.toLowerCase().includes(formData.course.toLowerCase())
+                  )
+                  .map(course => (
+                    <div
+                      key={course}
+                      className="dropdown-option"
+                      onClick={() => {
+                        setFormData({...formData, course});
+                        setShowCourseDropdown(false);
+                        setErrors(prev => ({...prev, course: ''}));
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setFormData({...formData, course});
+                          setShowCourseDropdown(false);
+                        }
+                      }}
+                      tabIndex={0}
+                    >
+                      {course}
+                    </div>
+                  ))
+                }
+              </div>
+            )}
+          </div>
+          {errors.course && <span className="error-message">{errors.course}</span>}
+        </div>
 
         {/* Year Field */}
         <div className={`form-group ${errors.year ? 'error' : ''}`}>
@@ -305,8 +310,8 @@ const ProfileSetup = () => {
         </div>
 
         {/* Telegram Handle Field */}
-        <div className="form-group">
-          <label>Telegram Handle</label>
+        <div className={`form-group ${errors.telegramHandle ? 'error' : ''}`}>
+          <label>Telegram Handle *</label>
           <div className="telegram-input">
             <span className="handle-prefix">@</span>
             <input
@@ -317,6 +322,7 @@ const ProfileSetup = () => {
               placeholder="username"
             />
           </div>
+          {errors.telegramHandle && <span className="error-message">{errors.telegramHandle}</span>}
         </div>
 
         <button type="submit" className="submit-btn">Complete Profile</button>

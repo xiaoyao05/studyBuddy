@@ -24,7 +24,6 @@ const MyGroupsPage = () => {
               <p><strong>Date & Time:</strong> {group.datetime}</p>
               <p><strong>Max Pax:</strong> {group.maxPax}</p>
               <p><strong>Description:</strong> {group.description}</p>
-              {/* You can add buttons like View, Leave Group here */}
             </li>
           ))}
         </ul>

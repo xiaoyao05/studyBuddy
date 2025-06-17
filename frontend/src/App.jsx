@@ -8,6 +8,7 @@ import MyGroups from './sections/MyGroups';
 import RegisterAccount from './sections/RegisterAccount';
 import LoginPage from './sections/loginPage';
 import ProfileViewPage from './sections/ProfileViewPage';
+import GroupParticipantsPage from './sections/GroupParticipantsPage';
 import './index.css'
 import './App.css';
 
@@ -39,6 +40,7 @@ function App() {
         <Route path="/register" element={<RegisterAccount />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile/:userId" element={<ProfileViewPage />} />
+        <Route path="/group/:groupId/participants" element={<GroupParticipantsPage />} />
       </Routes>
     </Router>
   );

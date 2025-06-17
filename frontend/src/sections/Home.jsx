@@ -156,8 +156,12 @@ const GroupFilterPage = () => {
   };
 
   const viewHostProfile = (hostId) => {
-  navigate(`/profile/${hostId}`, { state: { viewOnly: true } });
-};
+    navigate(`/profile/${hostId}`, { state: { viewOnly: true } });
+  };
+
+  const viewParticipants = (groupId) => {
+    navigate(`/group/${groupId}/participants`);
+  };
 
 
   return (
@@ -261,7 +265,12 @@ const GroupFilterPage = () => {
                   <h3>{group.name}</h3>
                   <p>📍 {group.location}</p>
                   <p>📅 {group.date}</p>
-                  <p>👥 {group.participants} participants</p>
+                  <p 
+                    className="participants-link"
+                    onClick={() => viewParticipants(group.id)}
+                  >
+                    👥 {group.participants} participants
+                  </p>
                   <p>📚 {group.course} - {group.module}</p>
                   <p> 🧑‍💼 Host: {' '}
                     <span 

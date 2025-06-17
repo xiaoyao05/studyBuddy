@@ -12,6 +12,7 @@ const RequestManagementPage = () => {
       startTime: '',
       endTime: '',
       status: 'pending', // 'pending', 'accepted', 'rejected'
+      location: ''
     },
     {
       id: 2,
@@ -22,6 +23,7 @@ const RequestManagementPage = () => {
       startTime: '',
       endTime: '',
       status: 'pending',
+      location: ''
     },
     {
       id: 3,
@@ -32,6 +34,7 @@ const RequestManagementPage = () => {
       startTime: '',
       endTime: '',
       status: 'pending',
+      location: ''
     }
   ]);
 
@@ -103,6 +106,7 @@ const RequestManagementPage = () => {
                 <p><strong>Date:</strong> {request.requestDate}</p>
                 <p><strong>Start Time:</strong> {request.startTime}</p>
                 <p><strong>End Time:</strong> {request.endTime}</p>
+                <p><strong>Location:</strong> {request.location}</p>
               </div>
               {request.status === 'pending' && (
                 <div className="request-actions">

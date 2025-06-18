@@ -29,9 +29,8 @@ function TopNav() {
 function App() {
   return (
     <Router>
-      <TopNav />
       <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/home" element={<Home />} />
         <Route path="/create-group" element={<CreateGroup />} />
         <Route path="/profile" element={<Profile />} />

@@ -1,52 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const GroupFilterPage = () => {
   const navigate = useNavigate();
-  // Sample group data
-  const [allGroups, setAllGroups] = useState([
-    // {
-    //   id: 1,
-    //   name: '',
-    //   location: '',
-    //   date: '',
-    //   participants: '',
-    //   course: '',
-    //   module: '',
-    //   members: ['user1', 'user2'],
-    //   host: ''
-    // }
-    {
-      id: 1,
-      name: 'Study Group A',
-      location: 'Library',
-      date: '2023-10-15',
-      participants: '3/5',
-      course: 'Computer Science',
-      module: 'Algorithms',
-      members: ['user1', 'user2', 'user3'],
-      host: {  // Add host object
-        id: 'user1',
-        name: 'John Doe',
-        telegramHandle: 'johndoe123'
-      }
-    },
-    {
-      id: 2,
-      name: 'Math Study Group',
-      location: 'Cafeteria',
-      date: '2023-10-16',
-      participants: '5/5',
-      course: 'Mathematics',
-      module: 'Calculus',
-      members: ['user4', 'user5', 'user6', 'user7', 'user8'],
-      host: {  // Add host object
-        id: 'user4', 
-        name: 'Jane Smith',
-        telegramHandle: 'janesmith456'
-      }
-    },
-  ]);
+  const [allGroups, setAllGroups] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://127.0.0.1:5000/get-groups")
+      .then((response) => {
+        setAllGroups(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching groups:", error);
+      });
+  }, []);
+
+  // // Sample group data
+  // const [allGroups, setallGroups] = useState([
+  //   // {
+  //   //   id: 1,
+  //   //   name: '',
+  //   //   location: '',
+  //   //   date: '',
+  //   //   participants: '',
+  //   //   course: '',
+  //   //   module: '',
+  //   //   members: ['user1', 'user2'],
+  //   //   host: ''
+  //   // }
+  //   {
+  //     id: 1,
+  //     name: 'Study Group A',
+  //     location: 'Library',
+  //     date: '2023-10-15',
+  //     participants: '3/5',
+  //     course: 'Computer Science',
+  //     module: 'Algorithms',
+  //     members: ['user1', 'user2', 'user3'],
+  //     host: {  // Add host object
+  //       id: 'user1',
+  //       name: 'John Doe',
+  //       telegramHandle: 'johndoe123'
+  //     }
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Math Study Group',
+  //     location: 'Cafeteria',
+  //     date: '2023-10-16',
+  //     participants: '5/5',
+  //     course: 'Mathematics',
+  //     module: 'Calculus',
+  //     members: ['user4', 'user5', 'user6', 'user7', 'user8'],
+  //     host: {  // Add host object
+  //       id: 'user4', 
+  //       name: 'Jane Smith',
+  //       telegramHandle: 'janesmith456'
+  //     }
+  //   },
+  // ]);
 
   // State for filters
   const [filters, setFilters] = useState({
@@ -136,6 +149,7 @@ const GroupFilterPage = () => {
   };
 
   const handleJoinGroup = (groupId) => {
+    const currentUserId = session.get('user_id');
     setAllGroups(prevGroups => 
       prevGroups.map(group => {
         if (group.id === groupId) {
@@ -145,7 +159,7 @@ const GroupFilterPage = () => {
             return {
               ...group,
               participants: `${current + 1}/${max}`,
-              members: [...group.members, 'currentUser'] // Replace with actual user ID
+              members: [...group.members, 'currentUserId'] // Replace with actual user ID
             };
           }
         }

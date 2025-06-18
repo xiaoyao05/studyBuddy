@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import httpClient from "../httpClient";
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -9,15 +11,16 @@ const LoginPage = () => {
     console.log(email, password);
 
     try {
-      const resp = await httpClient.post("//localhost:5174/login", {
+      const resp = await httpClient.post("http://127.0.0.1:5000/login", {
         email,
         password,
       });
-
-      window.location.href = "/";
-    } catch (Exception) {
-      if (error.response.status === 401) {
+      navigate("/home", {state:{studentID:resp.data.studentID}});
+    } catch (error) {
+      if (error.response?.status === 401) {
         alert("Invalid credentials");
+      }else{
+        alert(error.message);
       }
     }
   };
@@ -32,7 +35,6 @@ const LoginPage = () => {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            id=""
           />
         </div>
         <div>
@@ -41,7 +43,6 @@ const LoginPage = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            id=""
           />
         </div>
         <button type="button" onClick={() => logInUser()}>

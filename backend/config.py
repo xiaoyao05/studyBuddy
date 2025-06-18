@@ -9,7 +9,7 @@ class ApplicationConfig:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:ywhwxy@db.hwnqavznixijetscwfsi.supabase.co:5432/postgres"
+    SQLALCHEMY_DATABASE_URI = "postgresql://postgres.hwnqavznixijetscwfsi:ywhwxy@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
     SESSION_TYPE = "redis"
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True

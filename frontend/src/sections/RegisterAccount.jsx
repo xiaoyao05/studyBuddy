@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import httpClient from "../httpClient";
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
@@ -124,8 +125,8 @@ const ProfileSetup = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const emailRegex = /^[^\s@]+@(e\.)?ntu\.edu\.sg$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
     const telegramRegex = /^[a-zA-Z0-9_]{5,}$/;
 
     if (!formData.name.trim()) newErrors.name = 'Name is required';
@@ -154,13 +155,28 @@ const ProfileSetup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(errors);
     if (validateForm()) {
       console.log('Profile data:', formData);
-      navigate('/home');
-      alert('Profile setup completed successfully!');
+      // post reqeust to create new student
+      try {
+        const resp = await httpClient.post("http://127.0.0.1:5000/register", {
+          ...formData
+        });
+        navigate('/');
+        alert('Profile setup completed successfully!');
+      } catch (error) {
+        console.log("wrong");
+        if (error.response?.status === 401) {
+          alert("Invalid credentials");
+        } else {
+          alert(error.message);
+        }
+      }     
     }
+    console.log("ccccc");
   };
 
   return (
@@ -213,8 +229,32 @@ const ProfileSetup = () => {
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
-          {errors.password && <span className="error-message">{errors.password}</span>}
           <small className="hint">Minimum 8 characters with letters and numbers</small>
+          <br/>
+          {errors.password && <span className="error-message">{errors.password}</span>}
+        </div>
+
+        <div className={`form-group ${errors.password ? 'error' : ''}`}>
+          <label>Confirm Password *</label>
+          <div className="password-input">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Create a password"
+            />
+            <button 
+              type="button" 
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          <small className="hint">Minimum 8 characters with letters and numbers</small>
+          <br/>
+          {errors.confirmPassword && <span className="error-message">{errors.password}</span>}
         </div>
 
         {/* Combined Course Field */}

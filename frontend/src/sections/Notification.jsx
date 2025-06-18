@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
 
 const RequestManagementPage = () => {
+  const [requests, setRequests] = useState([]);
   // Sample request data
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      userName: 'Name',
-      userCourse: '',
-      userModule: '',
-      requestDate: '',
-      startTime: '',
-      endTime: '',
-      status: 'pending', // 'pending', 'accepted', 'rejected'
-      location: ''
-    },
-    {
-      id: 2,
-      userName: 'Name',
-      userCourse: '',
-      userModule: '',
-      requestDate: '',
-      startTime: '',
-      endTime: '',
-      status: 'pending',
-      location: ''
-    },
-    {
-      id: 3,
-      userName: 'Name',
-      userCourse: '',
-      userModule: '',
-      requestDate: '',
-      startTime: '',
-      endTime: '',
-      status: 'pending',
-      location: ''
-    }
-  ]);
+  // const [requests, setRequests] = useState([
+  //   {
+  //     id: 1,
+  //     userName: 'Name',
+  //     userCourse: '',
+  //     userModule: '',
+  //     requestDate: '',
+  //     startTime: '',
+  //     endTime: '',
+  //     status: 'pending', // 'pending', 'accepted', 'rejected'
+  //     location: ''
+  //   },
+  //   {
+  //     id: 2,
+  //     userName: 'Name',
+  //     userCourse: '',
+  //     userModule: '',
+  //     requestDate: '',
+  //     startTime: '',
+  //     endTime: '',
+  //     status: 'pending',
+  //     location: ''
+  //   },
+  //   {
+  //     id: 3,
+  //     userName: 'Name',
+  //     userCourse: '',
+  //     userModule: '',
+  //     requestDate: '',
+  //     startTime: '',
+  //     endTime: '',
+  //     status: 'pending',
+  //     location: ''
+  //   }
+  // ]);
 
   // Filter requests based on status
   const [filter, setFilter] = useState('all'); // 'all', 'pending', 'accepted', 'rejected'
@@ -45,6 +46,10 @@ const RequestManagementPage = () => {
     if (filter === 'all') return true;
     return request.status === filter;
   });
+
+  const viewRequesterProfile = (requesterId) => {
+    navigate(`/profile/${requesterId}`, { state: { viewOnly: true } });
+  };
 
   // Handle request actions
   const handleAccept = (id) => {
@@ -100,13 +105,16 @@ const RequestManagementPage = () => {
                 <h3>{request.userName}</h3>
               </div>
               <div className="request-details">
+                <p><strong>Date and Time of Request:</strong> {request.DateTime}</p>
                 <p><strong>Status:</strong> {request.status}</p>
-                <p><strong>Course:</strong> {request.userCourse}</p>
-                <p><strong>Module:</strong> {request.userModule}</p>
-                <p><strong>Date:</strong> {request.requestDate}</p>
-                <p><strong>Start Time:</strong> {request.startTime}</p>
-                <p><strong>End Time:</strong> {request.endTime}</p>
-                <p><strong>Location:</strong> {request.location}</p>
+                <p> 🧑‍💼 Requester: {' '}
+                    <span 
+                      className="requester-link"
+                      onClick={() => viewRequesterProfile(request.studentID)}
+                    >
+                      {request.student.name}
+                    </span>
+                  </p>
               </div>
               {request.status === 'pending' && (
                 <div className="request-actions">

@@ -12,20 +12,6 @@ import GroupParticipantsPage from './sections/GroupParticipantsPage';
 import './index.css'
 import './App.css';
 
-function TopNav() {
-  const navigate = useNavigate();
-  return (
-    <nav className="top-nav">
-      <button onClick={() => navigate('/home')}>Home</button>
-      <button onClick={() => navigate('/create-group')}>Create Group</button>
-      <button onClick={() => navigate('/profile')}>Profile</button>
-      <button onClick={() => navigate('/notification')}>Notification</button>
-      <button onClick={() => navigate('/my-groups')}>My Groups</button>
-      <button onClick={() => navigate('/login')}>Login</button>
-    </nav>
-  );
-}
-
 function App() {
   return (
     <Router>

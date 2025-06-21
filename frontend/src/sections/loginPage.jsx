@@ -11,11 +11,11 @@ const LoginPage = () => {
     console.log(email, password);
 
     try {
-      const resp = await httpClient.post("http://127.0.0.1:5000/login", {
+      const resp = await httpClient.post("/api/login", {
         email,
         password,
       });
-      navigate("/home", {state:{studentID:resp.data.studentID}});
+      navigate("/home");
     } catch (error) {
       if (error.response?.status === 401) {
         alert("Invalid credentials");

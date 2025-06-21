@@ -165,7 +165,7 @@ const ProfileSetup = () => {
         const resp = await httpClient.post("http://127.0.0.1:5000/register", {
           ...formData
         });
-        navigate('/');
+        navigate('/home');
         alert('Profile setup completed successfully!');
       } catch (error) {
         console.log("wrong");

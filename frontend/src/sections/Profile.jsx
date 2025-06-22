@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import httpClient from '../httpClient';
 import { useLocation, useNavigate } from 'react-router-dom';
+import TopNav from './TopNav';
 
 const StudentProfile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -141,6 +142,14 @@ const StudentProfile = () => {
 
   return (
     <div className="profile-container">
+      <TopNav />
+      <button 
+        onClick={() => navigate(-1)} 
+        className="back-button"
+      >
+        ← Back to Groups
+      </button>
+
       <h1>Student Profile</h1>
 
       {!editMode ? (

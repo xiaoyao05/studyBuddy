@@ -220,12 +220,12 @@ def getGrpParticipants():
     results = []
     for p in participants:
         results.append({
-            "name": user.name,
-            "email": user.email,
-            "course": user.course,
-            "year": user.year,
-            "gender": user.gender,
-            "tele": user.tele
+            "name": p.name,
+            "email": p.email,
+            "course": p.course,
+            "year": p.year,
+            "gender": p.gender,
+            "tele": p.tele
         })
     
     return jsonify(results)
@@ -266,89 +266,108 @@ def edit_profile():
     
 # store reequest to join group
 @app.route("/join/<int:studySessionID>/request", methods=["POST"])
-def submit_join_request(session_id):
-    data = request.get_json()
-    student_id = data.get('currentUserID')
+def submit_join_request(studySessionID):
+    user_id = session.get("user_id")
+    user = Profile.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    # Check if you are the host
+    own_one = StudySession.query.filter_by(admin=user_id, studySessionID=studySessionID).first()
+    if own_one:
+        return jsonify({"error":"Session is created by you"}), 404
 
-    existing = Request.query.filter_by(studentID = student_id, studySessionID = session_id).first()
+    # Check if request already exists
+    existing = Request.query.filter_by(studentID=user_id, studySessionID=studySessionID).first()
     if existing:
-        return jsonify({"error":"Already requested"}), 400
-    
-    join_request = Request(studentID = student_id, studySessionID = session_id, status = "pending", dateTime = datetime.utcnow())
+        return jsonify({"error": "Already requested"}), 400
+
+    # Create a new join request
+    join_request = Request(
+        studentID=user_id,
+        studySessionID=studySessionID,
+        status="pending",
+        dateTime=datetime.now()
+    )
+
     db.session.add(join_request)
-    db.session.commit
+    db.session.commit()
 
-# # fetch joined groups
-# @app.route('/joined-groups', methods=['GET'])
-# def get_joined_groups():
-#     user = session.get("user_id")
-#     if not user:
-#         return jsonify({"error": "Not authenticated"}), 401
+    return jsonify({"message": "Join request submitted successfully"}), 201
 
-#     # Find participations
-#     participations = Participation.query.filter_by(user_id=user.id).all()
+# retrieve pending requests for hosts
+@app.route("/get_requests", methods=["GET"])
+def get_host_requests():
+    user_id = session.get("user_id")
+    user = Profile.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    requests = (
+        db.session.query(Request, Profile, StudySession)
+        .join(Profile, Request.studentID == Profile.id)
+        .join(StudySession, Request.studySessionID == StudySession.studySessionID)
+        .filter(
+            StudySession.admin == user_id
+        )
+        .order_by(Request.dateTime.desc())
+        .all()
+    )
+
+    result = []
+    for req, profile, s in requests:
+        result.append({
+            "requestID": req.reqID,
+            "requester": profile.name,
+            "requesterID":profile.id,
+            "sessionName": s.name,
+            "dateTime": req.dateTime.isoformat(),
+            "status": req.status
+        })
+
+    return jsonify(result), 200
+
+# respond to requests
+@app.route("/respond_request/<int:req_id>", methods=["POST"])
+def respond_to_request(req_id):
+    data = request.get_json()
+    new_status = data.get("status")
+
+    req = Request.query.get(req_id)
+    if not req:
+        return jsonify({"error": "Request not found"}), 404
+
+    # Update status
+    req.status = new_status
+
+    if new_status == "approved":
+        participation = Participation(
+            studentID=req.studentID,
+            studySessionID=req.studySessionID
+        )
+        db.session.add(participation)
+
+    db.session.commit()
+    return jsonify({"message": f"Request {new_status}"}), 200
+
+# fetch joined groups
+@app.route('/joined-groups', methods=['GET'])
+def get_joined_groups():
+    user = session.get("user_id")
+    if not user:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    # Find participations
+    participations = Participation.query.filter_by(user_id=user.id).all()
     
-#     # Extract sessions
-#     joined_sessions = [p.session for p in participations]
+    # Extract sessions
+    joined_sessions = [p.session for p in participations]
 
-#     # Return data
-#     return jsonify([{
-#         "id": session.id,
-#         "name": session.name
-#     } for session in joined_sessions])
-
-
-# # retrieve requests for hosts
-# @app.route("/get/<host_id>/requests", methods=["GET"])
-# def get_host_requests(host_id):
-#     requests = (
-#         db.session.query(Request, Profile)
-#         .join(StudySession, Profile)
-#         .filter(StudySession.admin == host_id, Request.reqID == Profile.id)
-#         .order_by(Request.dateTime.desc())
-#         .all()
-#     )
-#     result = []
-#     for req in requests:
-#         result.append (
-#             {
-#                 "requestID": req.reqID,
-#                 "requester": req.student.name,
-#                 "sessionName": req.study_session.name,
-#                 "dateTime": req.dateTime.isoformat(),
-#                 "status": req.status
-#             }
-#         )
-
-#     return jsonify(result), 200
-
-# # respond to requests
-# @app.route("/respond/<int:req_id>/request", methods=["POST"])
-# def respond_to_request(req_id):
-#     data = request.get_json()
-#     new_status = data.get("status")
-
-#     req = Request.query.get(req_id)
-#     if not req:
-#         return jsonify({"error":"request not found"}, 404)
-    
-#     req.status = new_status
-
-#     if req.status == 'approved':
-#         # Add user to Participation table
-#         already_joined = Participation.query.filter_by(
-#             studentID=req.studentID,
-#             studySessionID=req.studySessionID
-#         ).first()
-
-#         if not already_joined:
-#             db.session.add(Participation(
-#                 studentID=req.studentID,
-#                 studySessionID=req.studySessionID
-#             ))
-
-#     db.session.commit()
-#     return jsonify({"message": f"Request {req.status}"}), 200
+    # Return data
+    return jsonify([{
+        "id": session.id,
+        "name": session.name
+    } for session in joined_sessions])
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -110,25 +110,14 @@ const GroupFilterPage = () => {
     setSearchTerm('');
   };
 
-  const handleJoinGroup = (groupId) => {
-    const currentUserId = session.get('user_id');
-    setAllGroups(prevGroups => 
-      prevGroups.map(group => {
-        if (group.id === groupId) {
-          const [current, max] = [group.participantCount, group.groupSize];
-          
-          if (current < max) {
-            return {
-              ...group,
-              participants: `${current + 1}/${max}`,
-              members: [...group.members, 'currentUserId'] // Replace with actual user ID
-            };
-          }
-        }
-        return group;
-      })
-    );
-    alert('Your request has been submitted successfully!');
+  const handleJoinGroup = async (groupId) => {
+    try{
+      const resp = await httpClient.post(`/api/join/${groupId}/request`);
+      navigate('/home');
+      alert('Your request has been submitted successfully!');
+    } catch (error) {
+      alert(error.response?.data?.error);
+    }   
   };
 
   const viewHostProfile = (hostId) => {
@@ -252,7 +241,7 @@ const GroupFilterPage = () => {
                   <div className="group-actions">
                     <button 
                       className={`join-btn ${!canJoin ? 'disabled' : ''}`}
-                      onClick={() => canJoin && handleJoinGroup(group.id)}
+                      onClick={() => canJoin && handleJoinGroup(group.sessionID)}
                       disabled={!canJoin}
                     >
                       {canJoin ? 'Join Group' : 'Group Full'}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import httpClient from '../httpClient';
+import TopNav from "./TopNav";
 
 const CreateGroupPage = () => {
   const [newGroup, setNewGroup] = useState({
@@ -167,7 +168,7 @@ const CreateGroupPage = () => {
         navigate('/home');
         alert('Profile setup completed successfully!');
       } catch (error) {
-        alert(error.message);
+        alert(error.response?.data?.error);
       }
 
     } else {
@@ -189,6 +190,13 @@ const CreateGroupPage = () => {
 
   return (
     <div className="create-group-page">
+      <TopNav />
+      <button 
+        onClick={() => navigate(-1)} 
+        className="back-button"
+      >
+        ← Back to Groups
+      </button>
       <h1>Create New Group</h1>
       <form onSubmit={handleSubmit} className="group-form" noValidate>
         <div className={`form-group ${errors.name ? "error" : ""}`}>

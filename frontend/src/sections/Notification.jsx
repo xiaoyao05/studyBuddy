@@ -1,30 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import httpClient from '../httpClient';
 import TopNav from './TopNav';
 
 const RequestManagementPage = () => {
   const navigate = useNavigate();
-  const hostId = session.get("user_id")
   const [requests, setRequests] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resp = await httpClient.get("/api/@me");
-        if (resp){
-          const req = await httpClient.get(`/api/get/${hostId}/requests`);
-          setRequests(req.data);
-        }
+        console.log(resp.data);
+        const req = await httpClient.get(`/api/get_requests`);
+        setRequests(req.data);
       } catch (error) {
         alert("Not authenticated");
         navigate("/login");
       }
     };
     fetchData();
-  }, [hostId]);
+  }, []);
 
   // Filter requests based on status
-  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'accepted', 'rejected'
+  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'approved', 'rejected'
 
   const filteredRequests = requests.filter(request => {
     if (filter === 'all') return true;
@@ -32,25 +31,40 @@ const RequestManagementPage = () => {
   });
 
   const viewRequesterProfile = (requesterId) => {
-    navigate(`/profile/${requesterId}`, { state: { viewOnly: true } });
+    navigate("/profileView", { state: { viewOnly: true, userID: requesterId} });
   };
 
   // Handle request actions
-  const handleAccept = (id) => {
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'accepted' } : request
-    ));
+  const handleAccept = async (reqID) => {
+    try{
+      const resp = await httpClient.post(`/api/respond_request/${reqID}`, {status:"approved"});
+      navigate('/home');
+      alert('Accepted request successfully!');
+    } catch (error) {
+      alert(error.response?.data?.error);
+    }
   };
 
-  const handleReject = (id) => {
-    setRequests(requests.map(request => 
-      request.id === id ? { ...request, status: 'rejected' } : request
-    ));
+  const handleReject = async (reqID) => {
+    try{
+      const resp = await httpClient.post(`/api/respond_request/${reqID}`, {status:"rejected"});
+      navigate('/home');
+      alert('Rejected request successfully!');
+    } catch (error) {
+      alert(error.response?.data?.error);
+    }
   };
 
   return (
     <div className="request-management-page">
        <TopNav/>
+       <button 
+        onClick={() => navigate(-1)} 
+        className="back-button"
+      >
+        ← Back to Groups
+      </button>
+
       <h1>Request Management</h1>
       
       {/* Filter controls */}
@@ -85,19 +99,19 @@ const RequestManagementPage = () => {
       <div className="requests-list">
         {filteredRequests.length > 0 ? (
           filteredRequests.map(request => (
-            <div key={request.id} className={`request-card ${request.status}`}>
+            <div key={request.requestID} className={`request-card ${request.status}`}>
               <div className="request-header">
-                <h3>{request.userName}</h3>
+                <h3>{request.requester}</h3>
               </div>
               <div className="request-details">
-                <p><strong>Date and Time of Request:</strong> {request.DateTime}</p>
+                <p><strong>Date and Time of Request:</strong> {new Date(request.dateTime).toLocaleString()}</p>
                 <p><strong>Status:</strong> {request.status}</p>
                 <p> 🧑‍💼 Requester: {' '}
                     <span 
                       className="requester-link"
-                      onClick={() => viewRequesterProfile(request.studentID)}
+                      onClick={() => viewRequesterProfile(request.requesterID)}
                     >
-                      {request.student.name}
+                      {request.requester}
                     </span>
                   </p>
               </div>
@@ -105,13 +119,13 @@ const RequestManagementPage = () => {
                 <div className="request-actions">
                   <button 
                     className="accept-btn"
-                    onClick={() => handleAccept(request.id)}
+                    onClick={() => handleAccept(request.requestID)}
                   >
                     Accept
                   </button>
                   <button 
                     className="reject-btn"
-                    onClick={() => handleReject(request.id)}
+                    onClick={() => handleReject(request.requestID)}
                   >
                     Reject
                   </button>

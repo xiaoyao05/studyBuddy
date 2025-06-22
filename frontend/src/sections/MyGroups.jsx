@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import httpClient from '../httpClient';
+import TopNav from './TopNav';
 
 const MyGroupsPage = () => {
+  const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    // Load joined groups — in a real app, replace this with an API call or context
-    const joined = JSON.parse(localStorage.getItem('joinedGroups')) || [];
-    setGroups(joined);
+    const fetchData = async () => {
+      try {
+        const resp = await httpClient.get("/api/@me");
+        if (resp) {
+          const grp = await httpClient.get("/api/joined-groups");
+          setGroups(grp.data);
+        }
+      } catch (error) {
+        alert("Not authenticated");
+        navigate("/login")
+      }
+    };
+    fetchData();
   }, []);
 
   return (
     <div className="my-groups-page">
+      <TopNav/>
       <h1>My Groups</h1>
 
       {groups.length === 0 ? (

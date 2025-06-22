@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import httpClient from '../httpClient';
 import TopNav from './TopNav';
 
 const GroupFilterPage = () => {
   const navigate = useNavigate();
   const [allGroups, setAllGroups] = useState([]);
+  const [email, setemail] = useState("");
+  const [id, setid] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resp = await httpClient.get("/api/@me");
         console.log(resp.data);
+        setemail(resp.data.email);
+        setid(resp.data.id);
 
         const groupsResp = await httpClient.get("/api/get-groups");
+        console.log("group data", groupsResp.data);
         setAllGroups(groupsResp.data);
       } catch (error) {
         alert("Not authenticated");
@@ -28,7 +32,6 @@ const GroupFilterPage = () => {
   const [filters, setFilters] = useState({
     location: '',
     date: '',
-    course: '',
     module: '',
     participants: '',
     groupSizes: '',
@@ -40,9 +43,8 @@ const GroupFilterPage = () => {
   // Get unique values for filter options
   const locations = [...new Set(allGroups.map(group => group.location))];
   const dates = [...new Set(allGroups.map(group => group.date))];
-  const courses = [...new Set(allGroups.map(group => group.course))];
   const modules = [...new Set(allGroups.map(group => group.module))];
-  const groupSizes = [...new Set(allGroups.map(group => group.participants))];
+  const groupSizes = [...new Set(allGroups.map(group => parseInt(group.groupSize)))];
 
   // Filter groups based on criteria
   const filteredGroups = allGroups.filter(group => {
@@ -61,24 +63,22 @@ const GroupFilterPage = () => {
       return false;
     }
     
-    // Course filter
-    if (filters.course && group.course !== filters.course) {
-      return false;
-    }
-    
     // Module filter
     if (filters.module && group.module !== filters.module) {
       return false;
     }
 
     // Group size filter 
-    if (filters.groupSizes && !group.participants.includes(filters.groupSizes)) {
+    if (filters.groupSizes && group.groupSize !== parseInt(filters.groupSizes, 10)) {
+      console.log(filters.groupSizes, typeof(filters.groupSizes));
+      console.log(group.groupSize)
+      console.log(filters);
       return false;
     }
     
     // Participants filter (shows only groups with available spots)
     if (filters.participants === 'available') {
-      const [current, max] = group.participants.split('/').map(Number);
+      const [current, max] = [group.participantCount, group.groupSize];
       if (current >= max) {
         return false;
       }
@@ -91,7 +91,7 @@ const GroupFilterPage = () => {
     const { name, value } = e.target;
     setFilters(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'groupSizes' ? parseInt(value, 10) || '' : value
     }));
   };
 
@@ -103,7 +103,6 @@ const GroupFilterPage = () => {
     setFilters({
       location: '',
       date: '',
-      course: '',
       module: '',
       participants: '',
       groupSizes: '',
@@ -116,7 +115,7 @@ const GroupFilterPage = () => {
     setAllGroups(prevGroups => 
       prevGroups.map(group => {
         if (group.id === groupId) {
-          const [current, max] = group.participants.split('/').map(Number);
+          const [current, max] = [group.participantCount, group.groupSize];
           
           if (current < max) {
             return {
@@ -133,11 +132,11 @@ const GroupFilterPage = () => {
   };
 
   const viewHostProfile = (hostId) => {
-    navigate(`/profile/${hostId}`, { state: { viewOnly: true } });
+    navigate(`/profileView`, { state: { viewOnly: true, userID:hostId } });
   };
 
-  const viewParticipants = (groupId) => {
-    navigate(`/group/${groupId}/participants`);
+  const viewParticipants = (groupId, groupName) => {
+    navigate(`/group/${groupId}/${groupName}/participants`);
   };
 
 
@@ -180,18 +179,7 @@ const GroupFilterPage = () => {
               <option key={date} value={date}>{date}</option>
             ))}
           </select>
-          
-          <select
-            name="course"
-            value={filters.course}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Courses</option>
-            {courses.map(course => (
-              <option key={course} value={course}>{course}</option>
-            ))}
-          </select>
-          
+      
           <select
             name="module"
             value={filters.module}
@@ -210,7 +198,7 @@ const GroupFilterPage = () => {
           >
             <option value="">All Group Sizes</option>
             {groupSizes.map(size => (
-              <option key={size} value={size}>{size}</option>
+              <option key={size} value={parseInt(size)}>{size}</option>
             ))}
           </select>
 
@@ -236,27 +224,27 @@ const GroupFilterPage = () => {
         {filteredGroups.length > 0 ? (
           <div className="groups-grid">
             {filteredGroups.map(group => {
-              const [current, max] = group.participants.split('/').map(Number);
+              const [current, max] = [group.participantCount, group.groupSize];
               const canJoin = current < max;
 
               return (
-                <div key={group.id} className="group-card">
+                <div key={group.sessionID} className="group-card">
                   <h3>{group.name}</h3>
                   <p>📍 {group.location}</p>
                   <p>📅 {group.date}</p>
                   <p 
                     className="participants-link"
-                    onClick={() => viewParticipants(group.id)}
+                    onClick={() => viewParticipants(group.sessionID, group.name)}
                   >
-                    👥 {group.participants} participants
+                    👥 {group.participantCount}/{group.groupSize} participants
                   </p>
-                  <p>📚 {group.course} - {group.module}</p>
+                  <p>📚 {group.module}</p>
                   <p> 🧑‍💼 Host: {' '}
                     <span 
                       className="host-link"
-                      onClick={() => viewHostProfile(group.host.id)}
+                      onClick={() => viewHostProfile(group.admin.id, group.name)}
                     >
-                      {group.host.name}
+                      {group.admin.name}
                     </span>
                   </p>
                   

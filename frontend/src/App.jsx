@@ -24,8 +24,8 @@ function App() {
         <Route path="/my-groups" element={<MyGroups />} />
         <Route path="/register" element={<RegisterAccount />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/profile/:userId" element={<ProfileViewPage />} />
-        <Route path="/group/:groupId/participants" element={<GroupParticipantsPage />} />
+        <Route path="/profileView" element={<ProfileViewPage />} />
+        <Route path="/group/:groupId/:groupName/participants" element={<GroupParticipantsPage />} />
       </Routes>
     </Router>
   );

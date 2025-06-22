@@ -4,7 +4,9 @@ from flask_cors import CORS, cross_origin
 from flask_session import Session
 from config import ApplicationConfig
 from models import db, Profile, StudySession, Request, Participation
-from datetime import datetime
+from datetime import datetime, date, time
+from sqlalchemy import func, and_, or_
+from models import StudySession, Participation
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
@@ -20,7 +22,7 @@ with app.app_context():
 @app.route("/@me", methods=["GET"])
 def get_current_user():
     user_id = session.get("user_id")
-    print("user_id", user_id)
+    print("user_idMEEE", user_id)
 
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
@@ -97,100 +99,204 @@ def get_all_groups():
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
     
-    sessions = StudySession.query.all()
-    result = []
-    for s in sessions:
-        result.append({
+    today = date.today()
+    now = datetime.now().time()
+
+    # Query all future sessions with admin info and participant count
+    results = (
+        db.session.query(
+            StudySession,
+            Profile,
+            func.count(Participation.studentID).label("participant_count")
+        )
+        .join(Profile, StudySession.admin == Profile.id)  # join admin
+        .outerjoin(Participation, StudySession.studySessionID == Participation.studySessionID)
+        .filter(
+            or_(
+                StudySession.date > today,
+                and_(
+                    StudySession.date == today,
+                    StudySession.startTime > now
+                )
+            )
+        )
+        .group_by(StudySession.studySessionID, Profile.id)
+        .order_by(StudySession.date.asc(), StudySession.startTime.asc())
+        .all()
+    )
+
+    # Serialize to JSON
+    output = []
+    for s, admin, count in results:
+        output.append({
             "sessionID": s.studySessionID,
-            "admin": s.admin,
             "name": s.name,
             "groupSize": s.groupSize,
             "module": s.module,
-            "date": s.date.isoformat(),         # Convert to "YYYY-MM-DD"
-            "startTime": s.startTime.strftime("%H:%M"),  # e.g., "14:30"
+            "date": s.date.isoformat(),
+            "startTime": s.startTime.strftime("%H:%M"),
             "endTime": s.endTime.strftime("%H:%M"),
             "location": s.location,
-            "description": s.description
+            "description": s.description,
+            "admin": {
+                "id": admin.id,
+                "name": admin.name,
+                "email": admin.email,
+                "course": admin.course,
+                "year": admin.year,
+                "tele": admin.tele,
+                "gender": admin.gender,
+            },
+            "participantCount": count
         })
 
-    return jsonify(result)
+    return jsonify(output)
 
-# # edit user profile
-# @app.route("/edit-profile", methods=["PUT"])
-# def edit_profile():
-#     if "user_id" not in session:
-#         return jsonify({"error": "User not logged in"}), 401
+# create new session
+@app.route("/create-session", methods=["POST"])
+def create_session():
+    user_id = session.get("user_id")
+    print("user_id", user_id)
 
-#     user = Profile.query.get(session["user_id"])
-#     if not user:
-#         return jsonify({"error": "User not found"}), 404
-
-#     data = request.get_json()
-
-#     # Optional fields: update only if present in request
-#     if "Name" in data:
-#         user.name = data["Name"]
-#     if "Course" in data:
-#         user.course = data["Course"]
-#     if "Year" in data:
-#         user.year = data["Year"]
-#     if "Gender" in data:
-#         user.gender = data["Gender"]
-#     if "Telegram Handle" in data:
-#         user.tele = data["Telegram Handle"]
-
-#     try:
-#         db.session.commit()
-#         return jsonify({
-#             "message": "Profile updated successfully",
-#             "name": user.name,
-#             "course": user.course,
-#             "year": user.year,
-#             "gender": user.gender,
-#             "tele": user.tele
-#         })
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({"error": str(e)}), 500
-
-# # create new session
-# @app.route("/create-session", methods=["POST"])
-# def create_session():
-#     name = request.json["Group Name"]
-#     groupSize = request.json["Maximum Participants"]
-#     date = request.json["Date"]
-#     startTime = request.json["Start Time"]
-#     endTime = request.json["End Time"]
-#     location = request.json["Location"]
-#     description = request.json["Description"]
-#     module = request.json["Module (optional)"]
-
-#     session_exists = StudySession.query.filter_by(name=name).first() is not None
-
-#     if session_exists:
-#         return jsonify({"error": "Session name is used"}), 409
-
-#     new_session = StudySession(name=name, groupSize=groupSize, date=date, startTime=startTime, endTime=endTime, location=location, description=description, module=module)
-#     db.session.add(new_session)
-#     db.session.commit()
-
-#     return jsonify({
-#         "id": new_session.id
-#     })
-
-# # store reequest to join group
-# @app.route("/join/<int:studySessionID>/request", methods=["POST"])
-# def submit_join_request(session_id):
-#     data = request.get_json()
-#     student_id = data.get('currentUserID')
-
-#     existing = Request.query.filter_by(studentID = student_id, studySessionID = session_id).first()
-#     if existing:
-#         return jsonify({"error":"Already requested"}), 400
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
     
-#     join_request = Request(studentID = student_id, studySessionID = session_id, status = "pending", dateTime = datetime.utcnow())
-#     db.session.add(join_request)
-#     db.session.commit
+    name = request.json["name"]
+    groupSize = request.json["maxPax"]
+    date = datetime.fromisoformat(request.json["date"]).date()  # ISO string to date
+    startTime = datetime.fromisoformat(request.json["startTime"]).time()
+    endTime = datetime.fromisoformat(request.json["endTime"]).time()
+    location = request.json["location"]
+    description = request.json["description"]
+    module = request.json["module"]
+
+    session_exists = StudySession.query.filter_by(name=name).first() is not None
+
+    if session_exists:
+        return jsonify({"error": "Session name is used"}), 409
+
+    new_session = StudySession(name=name, admin=user_id, groupSize=groupSize, date=date, startTime=startTime, endTime=endTime, location=location, description=description, module=module)
+    db.session.add(new_session)
+    db.session.commit()
+
+    latest_session = StudySession.query.filter_by(admin=user_id).order_by(StudySession.studySessionID.desc()).first()
+    print("latest session", latest_session)
+
+    new_part = Participation(studentID=user_id, studySessionID=latest_session.studySessionID)
+    db.session.add(new_part)
+    db.session.commit()
+
+    return jsonify({
+        "id": new_session.studySessionID
+    })
+
+# get profile
+@app.route("/get-profile/<user_id>", methods=["GET"])
+def get_profile(user_id):
+    user = Profile.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "name": user.name,
+        "email": user.email,
+        "course": user.course,
+        "year": user.year,
+        "gender": user.gender,
+        "tele": user.tele
+    })
+
+@app.route("/getGrpParticipants", methods=["POST"])
+def getGrpParticipants():
+    user_id = session.get("user_id")
+    user = Profile.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    groupID = request.json["groupId"]
+    participants = db.session.query(Profile).join(Participation).\
+        filter(Participation.studySessionID == groupID).all()
+    
+    results = []
+    for p in participants:
+        results.append({
+            "name": user.name,
+            "email": user.email,
+            "course": user.course,
+            "year": user.year,
+            "gender": user.gender,
+            "tele": user.tele
+        })
+    
+    return jsonify(results)
+
+# edit user profile
+@app.route("/edit-profile", methods=["PUT"])
+def edit_profile():
+    if "user_id" not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    user = Profile.query.get(session["user_id"])
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json()
+
+    # Optional fields: update only if present in request
+    if "course" in data:
+        user.course = data["course"]
+    if "year" in data:
+        user.year = data["year"]
+    if "tele" in data:
+        user.tele = data["tele"]
+
+    try:
+        db.session.commit()
+        return jsonify({
+            "message": "Profile updated successfully",
+            "name": user.name,
+            "course": user.course,
+            "year": user.year,
+            "gender": user.gender,
+            "tele": user.tele
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+# store reequest to join group
+@app.route("/join/<int:studySessionID>/request", methods=["POST"])
+def submit_join_request(session_id):
+    data = request.get_json()
+    student_id = data.get('currentUserID')
+
+    existing = Request.query.filter_by(studentID = student_id, studySessionID = session_id).first()
+    if existing:
+        return jsonify({"error":"Already requested"}), 400
+    
+    join_request = Request(studentID = student_id, studySessionID = session_id, status = "pending", dateTime = datetime.utcnow())
+    db.session.add(join_request)
+    db.session.commit
+
+# # fetch joined groups
+# @app.route('/joined-groups', methods=['GET'])
+# def get_joined_groups():
+#     user = session.get("user_id")
+#     if not user:
+#         return jsonify({"error": "Not authenticated"}), 401
+
+#     # Find participations
+#     participations = Participation.query.filter_by(user_id=user.id).all()
+    
+#     # Extract sessions
+#     joined_sessions = [p.session for p in participations]
+
+#     # Return data
+#     return jsonify([{
+#         "id": session.id,
+#         "name": session.name
+#     } for session in joined_sessions])
+
 
 # # retrieve requests for hosts
 # @app.route("/get/<host_id>/requests", methods=["GET"])

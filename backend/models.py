@@ -24,12 +24,11 @@ class StudySession(db.Model):
     admin = db.Column(
         db.String(32),
         db.ForeignKey("Profile.id", ondelete="CASCADE"),
-        unique=True,
         nullable=False
     )
     name = db.Column(db.String(100), nullable=False)
     groupSize = db.Column(db.Integer, nullable=False)
-    module = db.Column(db.String(20), nullable=False)
+    module = db.Column(db.String(20), nullable=True)
     date = db.Column(db.Date, nullable=False)
     startTime = db.Column(db.Time, nullable=False)
     endTime = db.Column(db.Time, nullable=False)
@@ -59,7 +58,7 @@ class Request(db.Model):
     study_session = db.relationship("StudySession", backref="requests")
 
 class Participation(db.Model):
-    tablename = "Participation"
+    __tablename__ = "Participation"
     studentID = db.Column(
         db.String(32),
         db.ForeignKey("Profile.id", ondelete="CASCADE"),

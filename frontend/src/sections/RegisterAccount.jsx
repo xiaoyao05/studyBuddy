@@ -162,7 +162,7 @@ const ProfileSetup = () => {
       console.log('Profile data:', formData);
       // post reqeust to create new student
       try {
-        const resp = await httpClient.post("http://127.0.0.1:5000/register", {
+        const resp = await httpClient.post("/api/register", {
           ...formData
         });
         navigate('/home');
@@ -176,7 +176,6 @@ const ProfileSetup = () => {
         }
       }     
     }
-    console.log("ccccc");
   };
 
   return (

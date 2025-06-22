@@ -1,34 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import httpClient from '../httpClient';
+import TopNav from './TopNav';
 
 const ProfileViewPage = () => {
-  const { userId } = useParams();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [userID, setuserID] = useState(location.state.userID);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockProfiles = {
-      user1: {
-        name: 'John Doe',
-        email: 'john@example.com',
-        course: 'Computer Science',
-        year: '2',
-        gender: 'Male',
-        telegramHandle: 'johndoe123'
-      },
-      user4: {
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        course: 'Mathematics',
-        year: '3',
-        gender: 'Female',
-        telegramHandle: 'janesmith456'
+    const fetchData = async () => {
+      try {
+        const resp = await httpClient.get("/api/@me");
+        console.log(resp.data, userID);
+        const pf = await httpClient.get(`/api/get-profile/${userID}`);
+        setProfile(pf.data);        
+      } catch (error) {
+        alert("Not authenticated");
+        navigate("/login");
       }
     };
-    
-    setProfile(mockProfiles[userId]);
-  }, [userId]);
+    fetchData();
+  }, []);
 
   const openTelegram = (username) => {
     window.open(`https://t.me/${username}`, '_blank', 'noopener,noreferrer');
@@ -38,6 +32,7 @@ const ProfileViewPage = () => {
 
   return (
     <div className="profile-view">
+       <TopNav/>
       <button 
         onClick={() => navigate(-1)} 
         className="back-button"
@@ -53,13 +48,13 @@ const ProfileViewPage = () => {
         <p><strong>Gender:</strong> {profile.gender}</p>
         <p>
           <strong>Telegram:</strong>{' '}
-          {profile.telegramHandle ? (
+          {profile.tele ? (
             <span
-              onClick={() => openTelegram(profile.telegramHandle)}
+              onClick={() => openTelegram(profile.tele)}
               className="telegram-link"
               style={{ cursor: 'pointer' }}
             >
-              @{profile.telegramHandle}
+              @{profile.tele}
             </span>
           ) : (
             'Not provided'

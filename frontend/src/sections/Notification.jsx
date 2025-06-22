@@ -1,43 +1,27 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import httpClient from '../httpClient';
+import TopNav from './TopNav';
 
 const RequestManagementPage = () => {
+  const navigate = useNavigate();
+  const hostId = session.get("user_id")
   const [requests, setRequests] = useState([]);
-  // Sample request data
-  // const [requests, setRequests] = useState([
-  //   {
-  //     id: 1,
-  //     userName: 'Name',
-  //     userCourse: '',
-  //     userModule: '',
-  //     requestDate: '',
-  //     startTime: '',
-  //     endTime: '',
-  //     status: 'pending', // 'pending', 'accepted', 'rejected'
-  //     location: ''
-  //   },
-  //   {
-  //     id: 2,
-  //     userName: 'Name',
-  //     userCourse: '',
-  //     userModule: '',
-  //     requestDate: '',
-  //     startTime: '',
-  //     endTime: '',
-  //     status: 'pending',
-  //     location: ''
-  //   },
-  //   {
-  //     id: 3,
-  //     userName: 'Name',
-  //     userCourse: '',
-  //     userModule: '',
-  //     requestDate: '',
-  //     startTime: '',
-  //     endTime: '',
-  //     status: 'pending',
-  //     location: ''
-  //   }
-  // ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resp = await httpClient.get("/api/@me");
+        if (resp){
+          const req = await httpClient.get(`/api/get/${hostId}/requests`);
+          setRequests(req.data);
+        }
+      } catch (error) {
+        alert("Not authenticated");
+        navigate("/login");
+      }
+    };
+    fetchData();
+  }, [hostId]);
 
   // Filter requests based on status
   const [filter, setFilter] = useState('all'); // 'all', 'pending', 'accepted', 'rejected'
@@ -66,6 +50,7 @@ const RequestManagementPage = () => {
 
   return (
     <div className="request-management-page">
+       <TopNav/>
       <h1>Request Management</h1>
       
       {/* Filter controls */}

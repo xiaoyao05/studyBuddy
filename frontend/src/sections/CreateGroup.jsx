@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import httpClient from '../httpClient';
 
 const CreateGroupPage = () => {
   const [newGroup, setNewGroup] = useState({
-    name: '',
+    name: "",
     maxPax: 10,
-    location: '',
+    location: "",
     date: new Date(),
-    startTime: new Date(new Date().setHours(12, 0, 0, 0)), // Default to 12:00 PM
-    endTime: new Date(new Date().setHours(13, 0, 0, 0)),   // Default to 1:00 PM
-    description: '',
-    module: ''
+    startTime: new Date(new Date().setHours(12, 0, 0, 0)),
+    endTime: new Date(new Date().setHours(13, 0, 0, 0)),
+    description: "",
+    module: "",
   });
 
   const [errors, setErrors] = useState({
@@ -21,71 +23,101 @@ const CreateGroupPage = () => {
     date: false,
     startTime: false,
     endTime: false,
-    description: false
+    description: false,
   });
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resp = await httpClient.get("/api/@me");
+        console.log("check");
+        console.log(resp.data);
+
+      } catch (error) {
+        alert("Not authenticated");
+        navigate("/login");
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewGroup(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+    setNewGroup((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: false }));
+      setErrors((prev) => ({ ...prev, [name]: false }));
     }
   };
 
   const handleDateChange = (date) => {
-    // Update both date and times to maintain the same date
     const updatedDate = new Date(date);
+
     const updatedStartTime = new Date(newGroup.startTime);
     updatedStartTime.setFullYear(updatedDate.getFullYear());
     updatedStartTime.setMonth(updatedDate.getMonth());
     updatedStartTime.setDate(updatedDate.getDate());
-    
+
     const updatedEndTime = new Date(newGroup.endTime);
     updatedEndTime.setFullYear(updatedDate.getFullYear());
     updatedEndTime.setMonth(updatedDate.getMonth());
     updatedEndTime.setDate(updatedDate.getDate());
-    
-    setNewGroup(prev => ({ 
-      ...prev, 
+
+    setNewGroup((prev) => ({
+      ...prev,
       date: updatedDate,
       startTime: updatedStartTime,
-      endTime: updatedEndTime
+      endTime: updatedEndTime,
     }));
-    
+
     if (errors.date) {
-      setErrors(prev => ({ ...prev, date: false }));
+      setErrors((prev) => ({ ...prev, date: false }));
     }
   };
 
   const handleStartTimeChange = (time) => {
     const newStartTime = new Date(time);
-    setNewGroup(prev => ({ 
-      ...prev, 
-      startTime: newStartTime 
-    }));
-    
-    // Validate if end time is after start time
-    if (newStartTime >= newGroup.endTime) {
-      const newEndTime = new Date(newStartTime);
-      newEndTime.setHours(newStartTime.getHours() + 1);
-      setNewGroup(prev => ({ ...prev, endTime: newEndTime }));
+    newStartTime.setFullYear(newGroup.date.getFullYear());
+    newStartTime.setMonth(newGroup.date.getMonth());
+    newStartTime.setDate(newGroup.date.getDate());
+
+    let adjustedEndTime = newGroup.endTime;
+    if (!adjustedEndTime || adjustedEndTime <= newStartTime) {
+      adjustedEndTime = new Date(newStartTime);
+      adjustedEndTime.setHours(adjustedEndTime.getHours() + 1);
+    } else {
+      adjustedEndTime.setFullYear(newGroup.date.getFullYear());
+      adjustedEndTime.setMonth(newGroup.date.getMonth());
+      adjustedEndTime.setDate(newGroup.date.getDate());
     }
-    
+
+    setNewGroup((prev) => ({
+      ...prev,
+      startTime: newStartTime,
+      endTime: adjustedEndTime,
+    }));
+
     if (errors.startTime) {
-      setErrors(prev => ({ ...prev, startTime: false }));
+      setErrors((prev) => ({ ...prev, startTime: false }));
     }
   };
 
   const handleEndTimeChange = (time) => {
     const newEndTime = new Date(time);
-    setNewGroup(prev => ({ 
-      ...prev, 
-      endTime: newEndTime 
-    }));
-    
+    newEndTime.setFullYear(newGroup.date.getFullYear());
+    newEndTime.setMonth(newGroup.date.getMonth());
+    newEndTime.setDate(newGroup.date.getDate());
+
+    if (newEndTime <= newGroup.startTime) {
+      const adjustedEndTime = new Date(newGroup.startTime);
+      adjustedEndTime.setHours(adjustedEndTime.getHours() + 1);
+      setNewGroup((prev) => ({ ...prev, endTime: adjustedEndTime }));
+    } else {
+      setNewGroup((prev) => ({ ...prev, endTime: newEndTime }));
+    }
+
     if (errors.endTime) {
-      setErrors(prev => ({ ...prev, endTime: false }));
+      setErrors((prev) => ({ ...prev, endTime: false }));
     }
   };
 
@@ -97,52 +129,69 @@ const CreateGroupPage = () => {
       date: !newGroup.date,
       startTime: !newGroup.startTime,
       endTime: !newGroup.endTime || newGroup.endTime <= newGroup.startTime,
-      description: !newGroup.description.trim()
+      description: !newGroup.description.trim(),
     };
+
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error);
+    return !Object.values(newErrors).some((error) => error);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      // Combine date and times for the final datetime object
       const eventData = {
         ...newGroup,
-        datetime: {
-          date: newGroup.date,
-          startTime: newGroup.startTime,
-          endTime: newGroup.endTime
-        }
+        startTime: newGroup.startTime.toISOString(),
+        endTime: newGroup.endTime.toISOString(),
+        date: newGroup.date.toISOString().split("T")[0],
       };
-      
-      // Here you would typically send the data to your backend
-      console.log('Group created:', eventData);
-      alert('Group created successfully!');
-      
-      // Reset form after submission
+
+      console.log("Group created:", eventData);
+
       setNewGroup({
-        name: '',
+        name: "",
         maxPax: 10,
-        location: '',
+        location: "",
         date: new Date(),
         startTime: new Date(new Date().setHours(12, 0, 0, 0)),
         endTime: new Date(new Date().setHours(13, 0, 0, 0)),
-        description: '',
-        module: ''
+        description: "",
+        module: "",
       });
+
+      try{
+        const resp = await httpClient.post("/api/create-session", {
+          ...eventData
+        });
+        navigate('/home');
+        alert('Profile setup completed successfully!');
+      } catch (error) {
+        alert(error.message);
+      }
+
     } else {
-      alert('Please fill in all required fields correctly');
+      alert("Please fill in all required fields correctly");
     }
+  };
+
+  const getMinTime = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const getMaxTime = (date) => {
+    const d = new Date(date);
+    d.setHours(23, 59, 59, 999);
+    return d;
   };
 
   return (
     <div className="create-group-page">
       <h1>Create New Group</h1>
-      
       <form onSubmit={handleSubmit} className="group-form" noValidate>
-        <div className={`form-group ${errors.name ? 'error' : ''}`}>
+        <div className={`form-group ${errors.name ? "error" : ""}`}>
           <label>Group Name: *</label>
           <input
             type="text"
@@ -151,10 +200,12 @@ const CreateGroupPage = () => {
             onChange={handleInputChange}
             required
           />
-          {errors.name && <span className="error-message">Group name is required</span>}
+          {errors.name && (
+            <span className="error-message">Group name is required</span>
+          )}
         </div>
 
-        <div className={`form-group ${errors.maxPax ? 'error' : ''}`}>
+        <div className={`form-group ${errors.maxPax ? "error" : ""}`}>
           <label>Maximum Participants: *</label>
           <input
             type="number"
@@ -165,10 +216,14 @@ const CreateGroupPage = () => {
             onChange={handleInputChange}
             required
           />
-          {errors.maxPax && <span className="error-message">Minimum 2 participants required</span>}
+          {errors.maxPax && (
+            <span className="error-message">
+              Minimum 2 participants required
+            </span>
+          )}
         </div>
 
-        <div className={`form-group ${errors.location ? 'error' : ''}`}>
+        <div className={`form-group ${errors.location ? "error" : ""}`}>
           <label>Location: *</label>
           <input
             type="text"
@@ -177,11 +232,13 @@ const CreateGroupPage = () => {
             onChange={handleInputChange}
             required
           />
-          {errors.location && <span className="error-message">Location is required</span>}
+          {errors.location && (
+            <span className="error-message">Location is required</span>
+          )}
         </div>
 
         <div className="datetime-fields">
-          <div className={`form-group ${errors.date ? 'error' : ''}`}>
+          <div className={`form-group ${errors.date ? "error" : ""}`}>
             <label>Date: *</label>
             <DatePicker
               selected={newGroup.date}
@@ -190,10 +247,12 @@ const CreateGroupPage = () => {
               minDate={new Date()}
               required
             />
-            {errors.date && <span className="error-message">Please select a date</span>}
+            {errors.date && (
+              <span className="error-message">Please select a date</span>
+            )}
           </div>
 
-          <div className={`form-group ${errors.startTime ? 'error' : ''}`}>
+          <div className={`form-group ${errors.startTime ? "error" : ""}`}>
             <label>Start Time: *</label>
             <DatePicker
               selected={newGroup.startTime}
@@ -201,14 +260,20 @@ const CreateGroupPage = () => {
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={15}
-              timeCaption="Time"
+              timeCaption="Start"
               dateFormat="h:mm aa"
+              minTime={getMinTime(newGroup.date)}
+              maxTime={getMaxTime(newGroup.date)}
               required
             />
-            {errors.startTime && <span className="error-message">Please select a start time</span>}
+            {errors.startTime && (
+              <span className="error-message">
+                Please select a valid start time
+              </span>
+            )}
           </div>
 
-          <div className={`form-group ${errors.endTime ? 'error' : ''}`}>
+          <div className={`form-group ${errors.endTime ? "error" : ""}`}>
             <label>End Time: *</label>
             <DatePicker
               selected={newGroup.endTime}
@@ -216,23 +281,23 @@ const CreateGroupPage = () => {
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={15}
-              timeCaption="Time"
+              timeCaption="End"
               dateFormat="h:mm aa"
               minTime={newGroup.startTime}
-              maxTime={new Date(newGroup.startTime.getTime() + 12 * 60 * 60 * 1000)} // Max 12 hours after start
+              maxTime={getMaxTime(newGroup.date)}
               required
             />
             {errors.endTime && (
               <span className="error-message">
-                {newGroup.endTime <= newGroup.startTime 
-                  ? "End time must be after start time" 
+                {newGroup.endTime <= newGroup.startTime
+                  ? "End time must be after start time"
                   : "Please select an end time"}
               </span>
             )}
           </div>
         </div>
 
-        <div className={`form-group ${errors.description ? 'error' : ''}`}>
+        <div className={`form-group ${errors.description ? "error" : ""}`}>
           <label>Description: *</label>
           <textarea
             name="description"
@@ -240,7 +305,9 @@ const CreateGroupPage = () => {
             onChange={handleInputChange}
             required
           />
-          {errors.description && <span className="error-message">Description is required</span>}
+          {errors.description && (
+            <span className="error-message">Description is required</span>
+          )}
         </div>
 
         <div className="form-group">
@@ -253,7 +320,9 @@ const CreateGroupPage = () => {
           />
         </div>
 
-        <button type="submit" className="submit-btn">Create Group</button>
+        <button type="submit" className="submit-btn">
+          Create Group
+        </button>
       </form>
     </div>
   );

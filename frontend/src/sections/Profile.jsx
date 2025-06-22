@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import httpClient from '../httpClient';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const StudentProfile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -8,7 +10,7 @@ const StudentProfile = () => {
     course: '',
     year: '',
     gender: '',
-    teleHandle: ''
+    tele: ''
   });
 
   const courseOptions = [
@@ -85,6 +87,24 @@ const StudentProfile = () => {
 
   const yearOptions = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5+'];
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resp = await httpClient.get("/api/@me");
+        console.log(resp.data);
+        const pf = await httpClient.get(`/api/get-profile/${location.state.userID}`);
+        setProfile(pf.data);        
+      } catch (error) {
+        alert("Not authenticated");
+        navigate("/login");
+      }
+    };
+    fetchData();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({
@@ -93,9 +113,24 @@ const StudentProfile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Profile submitted:', profile);
+
+    try {
+      const resp = await httpClient.put("/api/edit-profile", {
+        ...profile
+      });
+      navigate('/home');
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.log("wrong");
+      if (error.response?.status === 401) {
+        alert("Invalid credentials");
+      } else {
+        alert(error.message);
+      }
+    } 
+
     setEditMode(false);
     alert('Profile saved successfully!');
   };
@@ -116,7 +151,7 @@ const StudentProfile = () => {
             <p><strong>Course:</strong> {profile.course || 'Not selected'}</p>
             <p><strong>Year:</strong> {profile.year || 'Not selected'}</p>
             <p><strong>Gender:</strong> {profile.gender}</p>
-            <p><strong>Telegram Handle:</strong> {profile.teleHandle ? `@${profile.teleHandle}` : 'Not provided'}</p>
+            <p><strong>Telegram Handle:</strong> {profile.tele ? `@${profile.tele}` : 'Not provided'}</p>
           </div>
           <button onClick={handleEdit} className="edit-btn">
             Edit Profile
@@ -196,8 +231,8 @@ const StudentProfile = () => {
               <span className="handle-prefix">@</span>
               <input
                 type="text"
-                name="teleHandle"
-                value={profile.teleHandle}
+                name="tele"
+                value={profile.tele}
                 onChange={handleChange}
                 placeholder="username"
               />

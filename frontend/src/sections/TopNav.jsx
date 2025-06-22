@@ -15,11 +15,23 @@ function TopNav() {
         }
     }
   }
+  const handleProfile = async () => {
+    try {
+        const resp = await httpClient.get("/api/@me");
+        navigate('/profile', { state: { userID: resp.data.id } });
+    } catch (error) {
+        if (error.response?.status === 401) {
+        alert("Invalid credentials");
+        }else{
+        alert(error.message);
+        }
+    }
+  }
   return (
     <nav className="top-nav">
       <button onClick={() => navigate('/home')}>Home</button>
       <button onClick={() => navigate('/create-group')}>Create Group</button>
-      <button onClick={() => navigate('/profile')}>Profile</button>
+      <button onClick={() => handleProfile()}>Profile</button>
       <button onClick={() => navigate('/notification')}>Notification</button>
       <button onClick={() => navigate('/my-groups')}>My Groups</button>
       <button onClick={() => handlelogout()}>Log Out</button>

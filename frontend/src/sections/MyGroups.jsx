@@ -11,13 +11,12 @@ const MyGroupsPage = () => {
     const fetchData = async () => {
       try {
         const resp = await httpClient.get("/api/@me");
-        if (resp) {
-          const grp = await httpClient.get("/api/joined-groups");
-          setGroups(grp.data);
-        }
+        console.log(resp.data);
+        const joined_groups = await httpClient.get(`/api/joined-groups`);
+        setGroups(joined_groups.data);        
       } catch (error) {
         alert("Not authenticated");
-        navigate("/login")
+        navigate("/login");
       }
     };
     fetchData();
@@ -32,12 +31,13 @@ const MyGroupsPage = () => {
         <p>You haven't joined any groups yet.</p>
       ) : (
         <ul className="group-list">
-          {groups.map((group, index) => (
-            <li key={index} className="group-card">
+          {groups.map((group) => (
+            <li key={group.sessionID} className="group-card">
               <h2>{group.name}</h2>
               <p><strong>Location:</strong> {group.location}</p>
-              <p><strong>Date & Time:</strong> {group.datetime}</p>
-              <p><strong>Max Pax:</strong> {group.maxPax}</p>
+              <p><strong>Date: </strong>{group.date}</p>
+              <p><strong>Time:</strong> {group.startTime} - {group.endTime}</p>
+              <p><strong>Max Pax:</strong> {group.groupSize}</p>
               <p><strong>Description:</strong> {group.description}</p>
             </li>
           ))}

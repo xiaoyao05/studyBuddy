@@ -353,21 +353,34 @@ def respond_to_request(req_id):
 # fetch joined groups
 @app.route('/joined-groups', methods=['GET'])
 def get_joined_groups():
-    user = session.get("user_id")
-    if not user:
+    user_id = session.get("user_id")
+    if not user_id:
         return jsonify({"error": "Not authenticated"}), 401
 
-    # Find participations
-    participations = Participation.query.filter_by(user_id=user.id).all()
-    
-    # Extract sessions
-    joined_sessions = [p.session for p in participations]
+    # Join StudySession and Participation tables for sessions joined by the user
+    joined_sessions = (
+        db.session.query(StudySession)
+        .join(Participation, StudySession.studySessionID == Participation.studySessionID)
+        .filter(Participation.studentID == user_id)
+        .all()
+    )
 
-    # Return data
-    return jsonify([{
-        "id": session.id,
-        "name": session.name
-    } for session in joined_sessions])
+    # Format the result
+    result = []
+    for s in joined_sessions:
+        result.append({
+            "sessionID": s.studySessionID,
+            "name": s.name,
+            "module": s.module,
+            "date": s.date.isoformat(),
+            "startTime": s.startTime.strftime("%H:%M"),
+            "endTime": s.endTime.strftime("%H:%M"),
+            "location": s.location,
+            "description": s.description,
+            "groupSize":s.groupSize
+        })
+
+    return jsonify(result), 200
 
 if __name__ == "__main__":
     app.run(debug=True)

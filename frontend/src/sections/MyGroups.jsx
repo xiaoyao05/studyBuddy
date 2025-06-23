@@ -22,9 +22,29 @@ const MyGroupsPage = () => {
     fetchData();
   }, []);
 
+  const handleWithdrawal = async (studySessionID) => {
+    try{
+      const resp = await httpClient.delete("/api/withdrawal", {data:{studySessionID:studySessionID}});
+      alert(resp.data.message);
+      await navigate("/my-groups");
+    } catch (error) {
+      alert(error.response?.data?.error);
+      if (error.response?.status === 401){
+        navigate("/login");
+      }
+    }
+  }
+
   return (
     <div className="my-groups-page">
       <TopNav/>
+      <button 
+        onClick={() => navigate(-1)} 
+        className="back-button"
+      >
+        ← Back to Groups
+      </button>
+
       <h1>My Groups</h1>
 
       {groups.length === 0 ? (
@@ -39,6 +59,12 @@ const MyGroupsPage = () => {
               <p><strong>Time:</strong> {group.startTime} - {group.endTime}</p>
               <p><strong>Max Pax:</strong> {group.groupSize}</p>
               <p><strong>Description:</strong> {group.description}</p>
+              <button 
+                onClick={() => handleWithdrawal(group.sessionID)} 
+                className="back-button"
+              >
+                Withdraw
+              </button>
             </li>
           ))}
         </ul>

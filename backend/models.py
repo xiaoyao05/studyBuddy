@@ -18,6 +18,10 @@ class Profile(db.Model):
     gender = db.Column(db.Enum("Male", "Female", "Other", name="gender_enum"), nullable=False)
     tele = db.Column(db.String(20), nullable=False, unique=True)
 
+    requests = db.relationship("Request", backref="student", passive_deletes=True)
+    joined_sessions = db.relationship("Participation", backref="student", passive_deletes=True)
+    sessions_hosted = db.relationship("StudySession", backref="admin_profile", passive_deletes=True)
+
 class StudySession(db.Model):
     __tablename__ = "StudySession"
     studySessionID = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -34,6 +38,9 @@ class StudySession(db.Model):
     endTime = db.Column(db.Time, nullable=False)
     location = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
+
+    requests = db.relationship("Request", backref="study_session", passive_deletes=True)
+    participants = db.relationship("Participation", backref="study_session", passive_deletes=True)
 
 class Request(db.Model):
     __tablename__ = "Request"
@@ -54,8 +61,6 @@ class Request(db.Model):
         default="pending"
     )
     dateTime = db.Column(db.DateTime, nullable=False)
-    student = db.relationship("Profile", backref="requests")
-    study_session = db.relationship("StudySession", backref="requests")
 
 class Participation(db.Model):
     __tablename__ = "Participation"
@@ -69,6 +74,3 @@ class Participation(db.Model):
         db.ForeignKey("StudySession.studySessionID", ondelete="CASCADE"),
         primary_key=True
     )
-
-    student = db.relationship("Profile", backref="joined_sessions")
-    study_session = db.relationship("StudySession", backref="participants")

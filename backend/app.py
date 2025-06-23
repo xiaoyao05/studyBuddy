@@ -382,5 +382,37 @@ def get_joined_groups():
 
     return jsonify(result), 200
 
+# withdrawal
+@app.route('/withdrawal', methods=['DELETE'])
+def withdrawal():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    data = request.get_json()
+    studySessionID = data.get("studySessionID")
+
+    # Fetch the session
+    session_to_withdraw = StudySession.query.get(studySessionID)
+    if not session_to_withdraw:
+        return jsonify({"error": "Study session not found"}), 404
+
+    # User is the host (admin) — delete the entire session
+    if session_to_withdraw.admin == user_id:
+        db.session.delete(session_to_withdraw)
+        db.session.commit()
+        return jsonify({"message": "Study session deleted by host"}), 200
+
+    # User is a participant — delete the participation record
+    participation = Participation.query.filter_by(
+        studentID=user_id,
+        studySessionID=studySessionID
+    ).first()
+
+    # delete
+    db.session.delete(participation)
+    db.session.commit()
+    return jsonify({"message": "Successfully withdrawn from study session"}), 200
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -221,6 +221,7 @@ const GroupFilterPage = () => {
                   <h3>{group.name}</h3>
                   <p>📍 {group.location}</p>
                   <p>📅 {group.date}</p>
+                  <p>Time: {group.startTime} - {group.endTime}</p>
                   <p 
                     className="participants-link"
                     onClick={() => viewParticipants(group.sessionID, group.name)}

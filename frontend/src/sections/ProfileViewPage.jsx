@@ -13,7 +13,6 @@ const ProfileViewPage = () => {
     const fetchData = async () => {
       try {
         const resp = await httpClient.get("/api/@me");
-        console.log(resp.data, userID);
         const pf = await httpClient.get(`/api/get-profile/${userID}`);
         setProfile(pf.data);        
       } catch (error) {

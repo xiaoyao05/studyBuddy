@@ -356,12 +356,24 @@ def get_joined_groups():
     user_id = session.get("user_id")
     if not user_id:
         return jsonify({"error": "Not authenticated"}), 401
+    
+    today = date.today()
+    now = datetime.now().time()
 
     # Join StudySession and Participation tables for sessions joined by the user
     joined_sessions = (
         db.session.query(StudySession)
         .join(Participation, StudySession.studySessionID == Participation.studySessionID)
         .filter(Participation.studentID == user_id)
+        .filter(
+            or_(
+                StudySession.date > today,
+                and_(
+                    StudySession.date == today,
+                    StudySession.startTime > now
+                )
+            )
+        )
         .all()
     )
 

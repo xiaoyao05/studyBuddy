@@ -166,7 +166,7 @@ const CreateGroupPage = () => {
           ...eventData
         });
         navigate('/home');
-        alert('Profile setup completed successfully!');
+        alert('Session created successfully!');
       } catch (error) {
         alert(error.response?.data?.error);
       }

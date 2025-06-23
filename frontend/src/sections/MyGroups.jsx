@@ -7,8 +7,7 @@ const MyGroupsPage = () => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       try {
         const resp = await httpClient.get("/api/@me");
         console.log(resp.data);
@@ -19,6 +18,8 @@ const MyGroupsPage = () => {
         navigate("/login");
       }
     };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -26,7 +27,7 @@ const MyGroupsPage = () => {
     try{
       const resp = await httpClient.delete("/api/withdrawal", {data:{studySessionID:studySessionID}});
       alert(resp.data.message);
-      await navigate("/my-groups");
+      await fetchData();
     } catch (error) {
       alert(error.response?.data?.error);
       if (error.response?.status === 401){

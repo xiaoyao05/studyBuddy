@@ -181,6 +181,9 @@ const ProfileSetup = () => {
 
   return (
     <div className="profile-setup-container">
+      <button onClick={() => navigate(-1)} className="back-button">
+        ← Back
+      </button>
       <h1>Complete Your Profile</h1>
       <form onSubmit={handleSubmit} className="profile-form">
         

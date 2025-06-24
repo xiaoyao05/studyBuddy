@@ -1,0 +1,110 @@
+.my-groups-page {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fc;
+  min-height: 100vh;
+  color: #2d3748;
+  padding: 2rem;
+}
+
+/* Content Container */
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Back Button */
+.back-button {
+  background-color: #e2e8f0;
+  color: #2d3748;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #2b6cb0;
+  color: white;
+}
+
+/* Page Heading */
+h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2b6cb0;
+}
+
+/* Group List */
+.group-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Group Card */
+.group-card {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-left: 6px solid #4299e1;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.group-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.group-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #1a202c;
+}
+
+.group-card p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+/* Withdraw Button */
+.withdraw-button {
+  margin-top: 1rem;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.withdraw-button:hover {
+  background-color: #c53030;
+}
+
+/* No Groups Text */
+.content-wrapper > p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .group-card {
+    padding: 1rem;
+  }
+
+  .withdraw-button {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -322,7 +322,8 @@ def get_host_requests():
             "requesterID":profile.id,
             "sessionName": s.name,
             "dateTime": req.dateTime.isoformat(),
-            "status": req.status
+            "status": req.status.capitalize(),
+            "sessionName":s.name
         })
 
     return jsonify(result), 200
@@ -362,9 +363,17 @@ def get_joined_groups():
 
     # Join StudySession and Participation tables for sessions joined by the user
     joined_sessions = (
-        db.session.query(StudySession)
+        db.session.query(
+        StudySession,
+        func.count(Participation.studentID).label("participant_count")
+        )
         .join(Participation, StudySession.studySessionID == Participation.studySessionID)
-        .filter(Participation.studentID == user_id)
+        .filter(
+            StudySession.studySessionID.in_(
+                db.session.query(Participation.studySessionID)
+                .filter(Participation.studentID == user_id)
+            )
+        )
         .filter(
             or_(
                 StudySession.date > today,
@@ -374,12 +383,13 @@ def get_joined_groups():
                 )
             )
         )
+        .group_by(StudySession.studySessionID)
         .all()
     )
 
     # Format the result
     result = []
-    for s in joined_sessions:
+    for s, c in joined_sessions:
         result.append({
             "sessionID": s.studySessionID,
             "name": s.name,
@@ -389,7 +399,8 @@ def get_joined_groups():
             "endTime": s.endTime.strftime("%H:%M"),
             "location": s.location,
             "description": s.description,
-            "groupSize":s.groupSize
+            "groupSize":s.groupSize,
+            "participation":c
         })
 
     return jsonify(result), 200

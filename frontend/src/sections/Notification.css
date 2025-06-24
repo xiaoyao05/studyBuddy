@@ -1,0 +1,170 @@
+/* Container */
+.request-management-page {
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f9fc;
+  color: #1a202c;
+}
+
+/* Back button */
+.back-button {
+  background-color: #e2e8f0;
+  color: #2d3748;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #2b6cb0;
+  color: #fff;
+}
+
+/* Title */
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #2b6cb0;
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-controls button {
+  background-color: #edf2f7;
+  color: #2d3748;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.filter-controls button.active {
+  background-color: #2b6cb0;
+  color: white;
+}
+
+.filter-controls button:hover {
+  background-color: #cbd5e0;
+}
+
+/* Request List */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Request Card */
+.request-card {
+  background: #ffffff;
+  border-left: 5px solid #ecc427;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.request-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Status-based colors */
+.request-card.pending {
+  border-left-color: #ecc94b;
+}
+.request-card.accepted {
+  border-left-color: #38a169;
+}
+.request-card.rejected {
+  border-left-color: #e53e3e;
+}
+
+/* Request Details */
+.request-details p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.request-header h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: #2d3748;
+}
+
+/* Link to Profile */
+.requester-link {
+  color: #3182ce;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.requester-link:hover {
+  color: #2c5282;
+}
+
+/* Action Buttons */
+.request-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.accept-btn, .reject-btn {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accept-btn {
+  background-color: #38a169;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #2f855a;
+}
+
+.reject-btn {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #c53030;
+}
+
+/* No Requests Message */
+.no-requests {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .filter-controls {
+    flex-direction: column;
+  }
+
+  .request-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

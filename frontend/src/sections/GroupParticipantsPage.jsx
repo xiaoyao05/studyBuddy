@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import httpClient from "../httpClient";
+import "./GroupParticipantsPage.css";
 
 const GroupParticipantsPage = () => {
   const { groupId, groupName } = useParams();
@@ -32,7 +33,7 @@ const GroupParticipantsPage = () => {
         onClick={() => navigate(-1)}
         className="back-button"
       >
-        ← Back to Group
+        ← Back
       </button>
 
       <h1>Participants of {groupName}</h1>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import httpClient from "../httpClient";
+import "./RegisterAccount.css";
 
 const ProfileSetup = () => {
   const navigate = useNavigate();

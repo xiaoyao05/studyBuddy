@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import httpClient from '../httpClient';
 import TopNav from './TopNav';
+import './Home.css';
 
 const GroupFilterPage = () => {
   const navigate = useNavigate();
@@ -221,12 +222,15 @@ const GroupFilterPage = () => {
                   <h3>{group.name}</h3>
                   <p>📍 {group.location}</p>
                   <p>📅 {group.date}</p>
-                  <p>Time: {group.startTime} - {group.endTime}</p>
-                  <p 
-                    className="participants-link"
-                    onClick={() => viewParticipants(group.sessionID, group.name)}
-                  >
-                    👥 {group.participantCount}/{group.groupSize} participants
+                  <p>🕒 {group.startTime} - {group.endTime}</p>
+                  <p>
+                    👥{" "} 
+                      <span 
+                        className="participants-link" 
+                        onClick={() => viewParticipants(group.sessionID, group.name)}
+                      >
+                        {group.participantCount}/{group.groupSize} participants
+                      </span>
                   </p>
                   <p>📚 {group.module}</p>
                   <p> 🧑‍💼 Host: {' '}

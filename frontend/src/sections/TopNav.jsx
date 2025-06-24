@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import httpClient from "../httpClient";
+import './TopNav.css';
 
 function TopNav() {
   const navigate = useNavigate();
@@ -29,12 +30,14 @@ function TopNav() {
   }
   return (
     <nav className="top-nav">
-      <button onClick={() => navigate('/home')}>Home</button>
-      <button onClick={() => navigate('/create-group')}>Create Group</button>
-      <button onClick={() => handleProfile()}>Profile</button>
-      <button onClick={() => navigate('/notification')}>Notification</button>
-      <button onClick={() => navigate('/my-groups')}>My Groups</button>
-      <button onClick={() => handlelogout()}>Log Out</button>
+       <div className="nav-buttons">
+          <button onClick={() => navigate('/home')}>Home</button>
+          <button onClick={() => navigate('/create-group')}>Create Group</button>
+          <button onClick={() => handleProfile()}>Profile</button>
+          <button onClick={() => navigate('/notification')}>Notification</button>
+          <button onClick={() => navigate('/my-groups')}>My Groups</button>
+          <button onClick={() => handlelogout()}>Log Out</button>
+        </div>
     </nav>
   );
 }

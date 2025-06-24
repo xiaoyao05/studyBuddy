@@ -1,0 +1,51 @@
+.top-nav {
+  background-color: #1e1e2f;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Button style */
+.top-nav button {
+  background: transparent;
+  color: #f1f1f1;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.top-nav button:hover {
+  background-color: #2a2a40;
+  border-color: #3a3a55;
+  color: #ffffff;
+}
+
+.top-nav button:focus {
+  outline: none;
+  background-color: #3c3c5c;
+  border-color: #5a5a85;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .nav-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .top-nav button {
+    width: 100%;
+    text-align: center;
+  }
+}

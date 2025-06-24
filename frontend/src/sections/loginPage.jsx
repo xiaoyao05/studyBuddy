@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import httpClient from "../httpClient";
 import { useNavigate } from 'react-router-dom';
+import "./loginPage.css";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -26,35 +27,33 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h1>Log Into Your Account</h1>
-      <form>
-        <div>
-          <label>Email: </label>
+  <div className="login-container">   
+      <form className="form-group">
+        <h1>Sign in</h1>
+        <div className="form-field">
+          <label>Email:</label>
           <input
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div>
-          <label>Password: </label>
+        <div className="form-field">
+          <label>Password:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="button" onClick={() => logInUser()}>
+        <button type="button" onClick={logInUser}>
           Submit
         </button>
-        <br/>
-        <a href="/register">
-              Don't have an account? Sign up
-        </a>
+        <a href="/register">Don't have an account? Sign up</a>
       </form>
-    </div>
-  );
+  </div>
+);
+
 };
 
 export default LoginPage;

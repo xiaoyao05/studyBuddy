@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import httpClient from '../httpClient';
 import TopNav from './TopNav';
+import "./ProfileViewPage.css";
 
 const ProfileViewPage = () => {
   const navigate = useNavigate();
@@ -30,13 +31,13 @@ const ProfileViewPage = () => {
   if (!profile) return <div>Loading...</div>;
 
   return (
-    <div className="profile-view">
+    <div className="profile-view-2">
        <TopNav/>
       <button 
         onClick={() => navigate(-1)} 
         className="back-button"
       >
-        ← Back to Groups
+        ← Back
       </button>
       
       <h1>{profile.name}'s Profile</h1>

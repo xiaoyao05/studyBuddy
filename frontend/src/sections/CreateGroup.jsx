@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import httpClient from '../httpClient';
 import TopNav from "./TopNav";
+import "./CreateGroup.css";
 
 const CreateGroupPage = () => {
   const [newGroup, setNewGroup] = useState({
@@ -195,57 +196,57 @@ const CreateGroupPage = () => {
         onClick={() => navigate(-1)} 
         className="back-button"
       >
-        ← Back to Groups
+        ← Back
       </button>
       <h1>Create New Group</h1>
       <form onSubmit={handleSubmit} className="group-form" noValidate>
-        <div className={`form-group ${errors.name ? "error" : ""}`}>
-          <label>Group Name: *</label>
-          <input
-            type="text"
-            name="name"
-            value={newGroup.name}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.name && (
-            <span className="error-message">Group name is required</span>
-          )}
-        </div>
+        <div className="form-grid">
+          <div className={`form-group ${errors.name ? "error" : ""}`}>
+            <label>Group Name: *</label>
+            <input
+              type="text"
+              name="name"
+              value={newGroup.name}
+              onChange={handleInputChange}
+              required
+            />
+            {errors.name && (
+              <span className="error-message">Group name is required</span>
+            )}
+          </div>
 
-        <div className={`form-group ${errors.maxPax ? "error" : ""}`}>
-          <label>Maximum Participants: *</label>
-          <input
-            type="number"
-            name="maxPax"
-            min="2"
-            max="100"
-            value={newGroup.maxPax}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.maxPax && (
-            <span className="error-message">
-              Minimum 2 participants required
-            </span>
-          )}
-        </div>
+          <div className={`form-group ${errors.maxPax ? "error" : ""}`}>
+            <label>Maximum Participants: *</label>
+            <input
+              type="number"
+              name="maxPax"
+              min="2"
+              max="100"
+              value={newGroup.maxPax}
+              onChange={handleInputChange}
+              required
+            />
+            {errors.maxPax && (
+              <span className="error-message">
+                Minimum 2 participants required
+              </span>
+            )}
+          </div>
 
-        <div className={`form-group ${errors.location ? "error" : ""}`}>
-          <label>Location: *</label>
-          <input
-            type="text"
-            name="location"
-            value={newGroup.location}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.location && (
-            <span className="error-message">Location is required</span>
-          )}
-        </div>
+          <div className={`form-group ${errors.location ? "error" : ""}`}>
+            <label>Location: *</label>
+            <input
+              type="text"
+              name="location"
+              value={newGroup.location}
+              onChange={handleInputChange}
+              required
+            />
+            {errors.location && (
+              <span className="error-message">Location is required</span>
+            )}
+          </div>
 
-        <div className="datetime-fields">
           <div className={`form-group ${errors.date ? "error" : ""}`}>
             <label>Date: *</label>
             <DatePicker
@@ -303,31 +304,30 @@ const CreateGroupPage = () => {
               </span>
             )}
           </div>
-        </div>
 
-        <div className={`form-group ${errors.description ? "error" : ""}`}>
-          <label>Description: *</label>
-          <textarea
-            name="description"
-            value={newGroup.description}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.description && (
-            <span className="error-message">Description is required</span>
-          )}
-        </div>
+          <div className={`form-group ${errors.description ? "error" : ""}`}>
+            <label>Description: *</label>
+            <textarea
+              name="description"
+              value={newGroup.description}
+              onChange={handleInputChange}
+              required
+            />
+            {errors.description && (
+              <span className="error-message">Description is required</span>
+            )}
+          </div>
 
-        <div className="form-group">
-          <label>Module (optional):</label>
-          <input
-            type="text"
-            name="module"
-            value={newGroup.module}
-            onChange={handleInputChange}
-          />
+          <div className="form-group">
+            <label>Module (optional):</label>
+            <input
+              type="text"
+              name="module"
+              value={newGroup.module}
+              onChange={handleInputChange}
+            />
+          </div>
         </div>
-
         <button type="submit" className="submit-btn">
           Create Group
         </button>

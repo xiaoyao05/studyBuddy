@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import httpClient from '../httpClient';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TopNav from './TopNav';
+import "./Profile.css";
 
 const StudentProfile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -147,24 +148,26 @@ const StudentProfile = () => {
         onClick={() => navigate(-1)} 
         className="back-button"
       >
-        ← Back to Groups
+        ← Back
       </button>
 
       <h1>Student Profile</h1>
 
       {!editMode ? (
-        <div className="profile-view">
-          <div className="profile-details">
-            <p><strong>Name:</strong> {profile.name}</p>
-            <p><strong>Email:</strong> {profile.email}</p>
-            <p><strong>Course:</strong> {profile.course || 'Not selected'}</p>
-            <p><strong>Year:</strong> {profile.year || 'Not selected'}</p>
-            <p><strong>Gender:</strong> {profile.gender}</p>
-            <p><strong>Telegram Handle:</strong> {profile.tele ? `@${profile.tele}` : 'Not provided'}</p>
+        <div className="profile-view-parent">
+          <div className="profile-view">
+            <div className="profile-details">
+              <p><strong>Name:</strong> {profile.name}</p>
+              <p><strong>Email:</strong> {profile.email}</p>
+              <p><strong>Course:</strong> {profile.course || 'Not selected'}</p>
+              <p><strong>Year:</strong> {profile.year || 'Not selected'}</p>
+              <p><strong>Gender:</strong> {profile.gender}</p>
+              <p><strong>Telegram Handle:</strong> {profile.tele ? `@${profile.tele}` : 'Not provided'}</p>
+            </div>
+            <button onClick={handleEdit} className="edit-btn">
+              Edit Profile
+            </button>
           </div>
-          <button onClick={handleEdit} className="edit-btn">
-            Edit Profile
-          </button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="profile-form">

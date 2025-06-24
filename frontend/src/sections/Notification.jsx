@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import httpClient from '../httpClient';
 import TopNav from './TopNav';
+import "./Notification.css";
 
 const RequestManagementPage = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const RequestManagementPage = () => {
         onClick={() => navigate(-1)} 
         className="back-button"
       >
-        ← Back to Groups
+        ← Back
       </button>
 
       <h1>Request Management</h1>
@@ -76,20 +77,20 @@ const RequestManagementPage = () => {
           All Requests
         </button>
         <button 
-          className={filter === 'pending' ? 'active' : ''}
-          onClick={() => setFilter('pending')}
+          className={filter === 'Pending' ? 'active' : ''}
+          onClick={() => setFilter('Pending')}
         >
           Pending
         </button>
         <button 
-          className={filter === 'accepted' ? 'active' : ''}
-          onClick={() => setFilter('accepted')}
+          className={filter === 'Approved' ? 'active' : ''}
+          onClick={() => setFilter('Approved')}
         >
           Accepted
         </button>
         <button 
-          className={filter === 'rejected' ? 'active' : ''}
-          onClick={() => setFilter('rejected')}
+          className={filter === 'Rejected' ? 'active' : ''}
+          onClick={() => setFilter('Rejected')}
         >
           Rejected
         </button>
@@ -105,6 +106,7 @@ const RequestManagementPage = () => {
               </div>
               <div className="request-details">
                 <p><strong>Date and Time of Request:</strong> {new Date(request.dateTime).toLocaleString()}</p>
+                <p><strong>Group:</strong> {request.sessionName}</p>
                 <p><strong>Status:</strong> {request.status}</p>
                 <p> 🧑‍💼 Requester: {' '}
                     <span 

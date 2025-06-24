@@ -1,0 +1,69 @@
+/* Container Setup */
+.profile-view-2 {
+  padding: 2rem;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Top Navigation Spacing */
+.profile-view > .top-nav {
+  margin-bottom: 2rem;
+}
+
+/* Back Button Styling */
+.back-button {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.back-button:hover {
+  background-color: #d6d6d6;
+  color: #000;
+}
+
+/* Page Heading */
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #222;
+}
+
+/* Profile Card */
+.profile-info {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.profile-info p {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.profile-info strong {
+  display: inline-block;
+  min-width: 100px;
+}
+
+/* Telegram Link */
+.telegram-link {
+  color: #0077b6;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.telegram-link:hover {
+  color: #023e8a;
+}

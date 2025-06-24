@@ -131,139 +131,140 @@ const GroupFilterPage = () => {
 
 
   return (
-    <div className="group-filter-page">
+    <>
       <TopNav/>
+      <div className="group-filter-page">
+        <h1>Find Groups</h1>
+        
+        {/* Search and Filter Section */}
+        <div className="filter-section">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search by group name..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+          
+          <div className="filter-controls">
+            <select
+              name="location"
+              value={filters.location}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Locations</option>
+              {locations.map(location => (
+                <option key={location} value={location}>{location}</option>
+              ))}
+            </select>
+            
+            <select
+              name="date"
+              value={filters.date}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Dates</option>
+              {dates.map(date => (
+                <option key={date} value={date}>{date}</option>
+              ))}
+            </select>
+        
+            <select
+              name="module"
+              value={filters.module}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Modules</option>
+              {modules.map(module => (
+                <option key={module} value={module}>{module}</option>
+              ))}
+            </select>
+            
+            <select
+              name="groupSizes"
+              value={filters.groupSizes}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Group Sizes</option>
+              {groupSizes.map(size => (
+                <option key={size} value={parseInt(size)}>{size}</option>
+              ))}
+            </select>
 
-      <h1>Find Groups</h1>
-      
-      {/* Search and Filter Section */}
-      <div className="filter-section">
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="Search by group name..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
+            <select
+              name="participants"
+              value={filters.participants}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Groups</option>
+              <option value="available">Only Available Spots</option>
+            </select>
+            
+            <button onClick={resetFilters} className="reset-btn">
+              Reset Filters
+            </button>
+          </div>
         </div>
         
-        <div className="filter-controls">
-          <select
-            name="location"
-            value={filters.location}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Locations</option>
-            {locations.map(location => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
+        {/* Results Section */}
+        <div className="results-section">
+          <h2>{filteredGroups.length} Groups Found</h2>
           
-          <select
-            name="date"
-            value={filters.date}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Dates</option>
-            {dates.map(date => (
-              <option key={date} value={date}>{date}</option>
-            ))}
-          </select>
-      
-          <select
-            name="module"
-            value={filters.module}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Modules</option>
-            {modules.map(module => (
-              <option key={module} value={module}>{module}</option>
-            ))}
-          </select>
-          
-          <select
-            name="groupSizes"
-            value={filters.groupSizes}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Group Sizes</option>
-            {groupSizes.map(size => (
-              <option key={size} value={parseInt(size)}>{size}</option>
-            ))}
-          </select>
+          {filteredGroups.length > 0 ? (
+            <div className="groups-grid">
+              {filteredGroups.map(group => {
+                const [current, max] = [group.participantCount, group.groupSize];
+                const canJoin = current < max;
 
-          <select
-            name="participants"
-            value={filters.participants}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Groups</option>
-            <option value="available">Only Available Spots</option>
-          </select>
-          
-          <button onClick={resetFilters} className="reset-btn">
-            Reset Filters
-          </button>
-        </div>
-      </div>
-      
-      {/* Results Section */}
-      <div className="results-section">
-        <h2>{filteredGroups.length} Groups Found</h2>
-        
-        {filteredGroups.length > 0 ? (
-          <div className="groups-grid">
-            {filteredGroups.map(group => {
-              const [current, max] = [group.participantCount, group.groupSize];
-              const canJoin = current < max;
-
-              return (
-                <div key={group.sessionID} className="group-card">
-                  <h3>{group.name}</h3>
-                  <p>📍 {group.location}</p>
-                  <p>📅 {group.date}</p>
-                  <p>🕒 {group.startTime} - {group.endTime}</p>
-                  <p>
-                    👥{" "} 
+                return (
+                  <div key={group.sessionID} className="group-card">
+                    <h3>{group.name}</h3>
+                    <p>📍 {group.location}</p>
+                    <p>📅 {group.date}</p>
+                    <p>🕒 {group.startTime} - {group.endTime}</p>
+                    <p>
+                      👥{" "} 
+                        <span 
+                          className="participants-link" 
+                          onClick={() => viewParticipants(group.sessionID, group.name)}
+                        >
+                          {group.participantCount}/{group.groupSize} participants
+                        </span>
+                    </p>
+                    <p>📚 {group.module}</p>
+                    <p> 🧑‍💼 Host: {' '}
                       <span 
-                        className="participants-link" 
-                        onClick={() => viewParticipants(group.sessionID, group.name)}
+                        className="host-link"
+                        onClick={() => viewHostProfile(group.admin.id, group.name)}
                       >
-                        {group.participantCount}/{group.groupSize} participants
+                        {group.admin.name}
                       </span>
-                  </p>
-                  <p>📚 {group.module}</p>
-                  <p> 🧑‍💼 Host: {' '}
-                    <span 
-                      className="host-link"
-                      onClick={() => viewHostProfile(group.admin.id, group.name)}
-                    >
-                      {group.admin.name}
-                    </span>
-                  </p>
-                  
-                  {/* NEW: Action buttons container */}
-                  <div className="group-actions">
-                    <button 
-                      className={`join-btn ${!canJoin ? 'disabled' : ''}`}
-                      onClick={() => canJoin && handleJoinGroup(group.sessionID)}
-                      disabled={!canJoin}
-                    >
-                      {canJoin ? 'Join Group' : 'Group Full'}
-                    </button>
+                    </p>
+                    
+                    {/* NEW: Action buttons container */}
+                    <div className="group-actions">
+                      <button 
+                        className={`join-btn ${!canJoin ? 'disabled' : ''}`}
+                        onClick={() => canJoin && handleJoinGroup(group.sessionID)}
+                        disabled={!canJoin}
+                      >
+                        {canJoin ? 'Join Group' : 'Group Full'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="no-results">
-            <p>No groups match your filters.</p>
-            <button onClick={resetFilters}>Reset Filters</button>
-          </div>
-        )}
+                );
+              })}
+            </div>
+          ) : (
+            <div className="no-results">
+              <p>No groups match your filters.</p>
+              <button onClick={resetFilters}>Reset Filters</button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

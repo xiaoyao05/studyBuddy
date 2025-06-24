@@ -190,149 +190,151 @@ const CreateGroupPage = () => {
   };
 
   return (
-    <div className="create-group-page">
+    <>
       <TopNav />
-      <button 
-        onClick={() => navigate(-1)} 
-        className="back-button"
-      >
-        ← Back
-      </button>
-      <h1>Create New Group</h1>
-      <form onSubmit={handleSubmit} className="group-form" noValidate>
-        <div className="form-grid">
-          <div className={`form-group ${errors.name ? "error" : ""}`}>
-            <label>Group Name: *</label>
-            <input
-              type="text"
-              name="name"
-              value={newGroup.name}
-              onChange={handleInputChange}
-              required
-            />
-            {errors.name && (
-              <span className="error-message">Group name is required</span>
-            )}
-          </div>
-
-          <div className={`form-group ${errors.maxPax ? "error" : ""}`}>
-            <label>Maximum Participants: *</label>
-            <input
-              type="number"
-              name="maxPax"
-              min="2"
-              max="100"
-              value={newGroup.maxPax}
-              onChange={handleInputChange}
-              required
-            />
-            {errors.maxPax && (
-              <span className="error-message">
-                Minimum 2 participants required
-              </span>
-            )}
-          </div>
-
-          <div className={`form-group ${errors.location ? "error" : ""}`}>
-            <label>Location: *</label>
-            <input
-              type="text"
-              name="location"
-              value={newGroup.location}
-              onChange={handleInputChange}
-              required
-            />
-            {errors.location && (
-              <span className="error-message">Location is required</span>
-            )}
-          </div>
-
-          <div className={`form-group ${errors.date ? "error" : ""}`}>
-            <label>Date: *</label>
-            <DatePicker
-              selected={newGroup.date}
-              onChange={handleDateChange}
-              dateFormat="MMMM d, yyyy"
-              minDate={new Date()}
-              required
-            />
-            {errors.date && (
-              <span className="error-message">Please select a date</span>
-            )}
-          </div>
-
-          <div className={`form-group ${errors.startTime ? "error" : ""}`}>
-            <label>Start Time: *</label>
-            <DatePicker
-              selected={newGroup.startTime}
-              onChange={handleStartTimeChange}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={15}
-              timeCaption="Start"
-              dateFormat="h:mm aa"
-              minTime={getMinTime(newGroup.date)}
-              maxTime={getMaxTime(newGroup.date)}
-              required
-            />
-            {errors.startTime && (
-              <span className="error-message">
-                Please select a valid start time
-              </span>
-            )}
-          </div>
-
-          <div className={`form-group ${errors.endTime ? "error" : ""}`}>
-            <label>End Time: *</label>
-            <DatePicker
-              selected={newGroup.endTime}
-              onChange={handleEndTimeChange}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={15}
-              timeCaption="End"
-              dateFormat="h:mm aa"
-              minTime={newGroup.startTime}
-              maxTime={getMaxTime(newGroup.date)}
-              required
-            />
-            {errors.endTime && (
-              <span className="error-message">
-                {newGroup.endTime <= newGroup.startTime
-                  ? "End time must be after start time"
-                  : "Please select an end time"}
-              </span>
-            )}
-          </div>
-
-          <div className={`form-group ${errors.description ? "error" : ""}`}>
-            <label>Description: *</label>
-            <textarea
-              name="description"
-              value={newGroup.description}
-              onChange={handleInputChange}
-              required
-            />
-            {errors.description && (
-              <span className="error-message">Description is required</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Module (optional):</label>
-            <input
-              type="text"
-              name="module"
-              value={newGroup.module}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-        <button type="submit" className="submit-btn">
-          Create Group
+      <div className="create-group-page">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="back-button"
+        >
+          ← Back
         </button>
-      </form>
-    </div>
+        <h1>Create New Group</h1>
+        <form onSubmit={handleSubmit} className="group-form" noValidate>
+          <div className="form-grid">
+            <div className={`form-group ${errors.name ? "error" : ""}`}>
+              <label>Group Name: *</label>
+              <input
+                type="text"
+                name="name"
+                value={newGroup.name}
+                onChange={handleInputChange}
+                required
+              />
+              {errors.name && (
+                <span className="error-message">Group name is required</span>
+              )}
+            </div>
+
+            <div className={`form-group ${errors.maxPax ? "error" : ""}`}>
+              <label>Maximum Participants: *</label>
+              <input
+                type="number"
+                name="maxPax"
+                min="2"
+                max="100"
+                value={newGroup.maxPax}
+                onChange={handleInputChange}
+                required
+              />
+              {errors.maxPax && (
+                <span className="error-message">
+                  Minimum 2 participants required
+                </span>
+              )}
+            </div>
+
+            <div className={`form-group ${errors.location ? "error" : ""}`}>
+              <label>Location: *</label>
+              <input
+                type="text"
+                name="location"
+                value={newGroup.location}
+                onChange={handleInputChange}
+                required
+              />
+              {errors.location && (
+                <span className="error-message">Location is required</span>
+              )}
+            </div>
+
+            <div className={`form-group ${errors.date ? "error" : ""}`}>
+              <label>Date: *</label>
+              <DatePicker
+                selected={newGroup.date}
+                onChange={handleDateChange}
+                dateFormat="MMMM d, yyyy"
+                minDate={new Date()}
+                required
+              />
+              {errors.date && (
+                <span className="error-message">Please select a date</span>
+              )}
+            </div>
+
+            <div className={`form-group ${errors.startTime ? "error" : ""}`}>
+              <label>Start Time: *</label>
+              <DatePicker
+                selected={newGroup.startTime}
+                onChange={handleStartTimeChange}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="Start"
+                dateFormat="h:mm aa"
+                minTime={getMinTime(newGroup.date)}
+                maxTime={getMaxTime(newGroup.date)}
+                required
+              />
+              {errors.startTime && (
+                <span className="error-message">
+                  Please select a valid start time
+                </span>
+              )}
+            </div>
+
+            <div className={`form-group ${errors.endTime ? "error" : ""}`}>
+              <label>End Time: *</label>
+              <DatePicker
+                selected={newGroup.endTime}
+                onChange={handleEndTimeChange}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="End"
+                dateFormat="h:mm aa"
+                minTime={newGroup.startTime}
+                maxTime={getMaxTime(newGroup.date)}
+                required
+              />
+              {errors.endTime && (
+                <span className="error-message">
+                  {newGroup.endTime <= newGroup.startTime
+                    ? "End time must be after start time"
+                    : "Please select an end time"}
+                </span>
+              )}
+            </div>
+
+            <div className={`form-group ${errors.description ? "error" : ""}`}>
+              <label>Description: *</label>
+              <textarea
+                name="description"
+                value={newGroup.description}
+                onChange={handleInputChange}
+                required
+              />
+              {errors.description && (
+                <span className="error-message">Description is required</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Module (optional):</label>
+              <input
+                type="text"
+                name="module"
+                value={newGroup.module}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          <button type="submit" className="submit-btn">
+            Create Group
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

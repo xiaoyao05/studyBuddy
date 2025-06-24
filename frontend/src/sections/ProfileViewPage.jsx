@@ -31,37 +31,39 @@ const ProfileViewPage = () => {
   if (!profile) return <div>Loading...</div>;
 
   return (
-    <div className="profile-view-2">
-       <TopNav/>
-      <button 
-        onClick={() => navigate(-1)} 
-        className="back-button"
-      >
-        ← Back
-      </button>
-      
-      <h1>{profile.name}'s Profile</h1>
-      <div className="profile-info">
-        <p><strong>Email:</strong> {profile.email}</p>
-        <p><strong>Course:</strong> {profile.course}</p>
-        <p><strong>Year:</strong> {profile.year}</p>
-        <p><strong>Gender:</strong> {profile.gender}</p>
-        <p>
-          <strong>Telegram:</strong>{' '}
-          {profile.tele ? (
-            <span
-              onClick={() => openTelegram(profile.tele)}
-              className="telegram-link"
-              style={{ cursor: 'pointer' }}
-            >
-              @{profile.tele}
-            </span>
-          ) : (
-            'Not provided'
-          )}
-        </p>
+    <>
+      <TopNav/>
+      <div className="profile-view-2">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="back-button"
+        >
+          ← Back
+        </button>
+        
+        <h1>{profile.name}'s Profile</h1>
+        <div className="profile-info">
+          <p><strong>Email:</strong> {profile.email}</p>
+          <p><strong>Course:</strong> {profile.course}</p>
+          <p><strong>Year:</strong> {profile.year}</p>
+          <p><strong>Gender:</strong> {profile.gender}</p>
+          <p>
+            <strong>Telegram:</strong>{' '}
+            {profile.tele ? (
+              <span
+                onClick={() => openTelegram(profile.tele)}
+                className="telegram-link"
+                style={{ cursor: 'pointer' }}
+              >
+                @{profile.tele}
+              </span>
+            ) : (
+              'Not provided'
+            )}
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

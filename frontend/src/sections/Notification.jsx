@@ -57,91 +57,94 @@ const RequestManagementPage = () => {
   };
 
   return (
-    <div className="request-management-page">
-       <TopNav/>
-       <button 
-        onClick={() => navigate(-1)} 
-        className="back-button"
-      >
-        ← Back
-      </button>
+    <>
+      <TopNav/>
+      <div className="request-management-page">
+        
+        <button 
+          onClick={() => navigate(-1)} 
+          className="back-button"
+        >
+          ← Back
+        </button>
 
-      <h1>Request Management</h1>
-      
-      {/* Filter controls */}
-      <div className="filter-controls">
-        <button 
-          className={filter === 'all' ? 'active' : ''}
-          onClick={() => setFilter('all')}
-        >
-          All Requests
-        </button>
-        <button 
-          className={filter === 'Pending' ? 'active' : ''}
-          onClick={() => setFilter('Pending')}
-        >
-          Pending
-        </button>
-        <button 
-          className={filter === 'Approved' ? 'active' : ''}
-          onClick={() => setFilter('Approved')}
-        >
-          Accepted
-        </button>
-        <button 
-          className={filter === 'Rejected' ? 'active' : ''}
-          onClick={() => setFilter('Rejected')}
-        >
-          Rejected
-        </button>
-      </div>
-      
-      {/* Requests list */}
-      <div className="requests-list">
-        {filteredRequests.length > 0 ? (
-          filteredRequests.map(request => (
-            <div key={request.requestID} className={`request-card ${request.status}`}>
-              <div className="request-header">
-                <h3>{request.requester}</h3>
-              </div>
-              <div className="request-details">
-                <p><strong>Date and Time of Request:</strong> {new Date(request.dateTime).toLocaleString()}</p>
-                <p><strong>Group:</strong> {request.sessionName}</p>
-                <p><strong>Status:</strong> {request.status}</p>
-                <p> 🧑‍💼 Requester: {' '}
-                    <span 
-                      className="requester-link"
-                      onClick={() => viewRequesterProfile(request.requesterID)}
-                    >
-                      {request.requester}
-                    </span>
-                  </p>
-              </div>
-              {request.status === 'pending' && (
-                <div className="request-actions">
-                  <button 
-                    className="accept-btn"
-                    onClick={() => handleAccept(request.requestID)}
-                  >
-                    Accept
-                  </button>
-                  <button 
-                    className="reject-btn"
-                    onClick={() => handleReject(request.requestID)}
-                  >
-                    Reject
-                  </button>
+        <h1>Request Management</h1>
+        
+        {/* Filter controls */}
+        <div className="filter-controls">
+          <button 
+            className={filter === 'all' ? 'active' : ''}
+            onClick={() => setFilter('all')}
+          >
+            All Requests
+          </button>
+          <button 
+            className={filter === 'Pending' ? 'active' : ''}
+            onClick={() => setFilter('Pending')}
+          >
+            Pending
+          </button>
+          <button 
+            className={filter === 'Approved' ? 'active' : ''}
+            onClick={() => setFilter('Approved')}
+          >
+            Accepted
+          </button>
+          <button 
+            className={filter === 'Rejected' ? 'active' : ''}
+            onClick={() => setFilter('Rejected')}
+          >
+            Rejected
+          </button>
+        </div>
+        
+        {/* Requests list */}
+        <div className="requests-list">
+          {filteredRequests.length > 0 ? (
+            filteredRequests.map(request => (
+              <div key={request.requestID} className={`request-card ${request.status}`}>
+                <div className="request-header">
+                  <h3>{request.requester}</h3>
                 </div>
-              )}
+                <div className="request-details">
+                  <p><strong>Date and Time of Request:</strong> {new Date(request.dateTime).toLocaleString()}</p>
+                  <p><strong>Group:</strong> {request.sessionName}</p>
+                  <p><strong>Status:</strong> {request.status}</p>
+                  <p> 🧑‍💼 Requester: {' '}
+                      <span 
+                        className="requester-link"
+                        onClick={() => viewRequesterProfile(request.requesterID)}
+                      >
+                        {request.requester}
+                      </span>
+                    </p>
+                </div>
+                {request.status === 'pending' && (
+                  <div className="request-actions">
+                    <button 
+                      className="accept-btn"
+                      onClick={() => handleAccept(request.requestID)}
+                    >
+                      Accept
+                    </button>
+                    <button 
+                      className="reject-btn"
+                      onClick={() => handleReject(request.requestID)}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="no-requests">
+              <p>No requests found matching your filter.</p>
             </div>
-          ))
-        ) : (
-          <div className="no-requests">
-            <p>No requests found matching your filter.</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

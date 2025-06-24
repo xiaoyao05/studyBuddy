@@ -173,7 +173,7 @@ const ProfileSetup = () => {
         if (error.response?.status === 401) {
           alert("Invalid credentials");
         } else {
-          alert(error.message);
+          alert(error.response?.data?.error);
         }
       }     
     }

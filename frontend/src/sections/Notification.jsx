@@ -8,8 +8,7 @@ const RequestManagementPage = () => {
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       try {
         const resp = await httpClient.get("/api/@me");
         console.log(resp.data);
@@ -20,6 +19,8 @@ const RequestManagementPage = () => {
         navigate("/login");
       }
     };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -39,8 +40,8 @@ const RequestManagementPage = () => {
   const handleAccept = async (reqID) => {
     try{
       const resp = await httpClient.post(`/api/respond_request/${reqID}`, {status:"approved"});
-      navigate('/home');
       alert('Accepted request successfully!');
+      fetchData();
     } catch (error) {
       alert(error.response?.data?.error);
     }
@@ -49,8 +50,8 @@ const RequestManagementPage = () => {
   const handleReject = async (reqID) => {
     try{
       const resp = await httpClient.post(`/api/respond_request/${reqID}`, {status:"rejected"});
-      navigate('/home');
       alert('Rejected request successfully!');
+      fetchData();
     } catch (error) {
       alert(error.response?.data?.error);
     }
@@ -119,7 +120,7 @@ const RequestManagementPage = () => {
                       </span>
                     </p>
                 </div>
-                {request.status === 'pending' && (
+                {request.status === 'Pending' && (
                   <div className="request-actions">
                     <button 
                       className="accept-btn"

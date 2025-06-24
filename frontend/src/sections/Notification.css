@@ -82,13 +82,13 @@ h1 {
 }
 
 /* Status-based colors */
-.request-card.pending {
+.request-card.Pending {
   border-left-color: #ecc94b;
 }
-.request-card.accepted {
+.request-card.Approved {
   border-left-color: #38a169;
 }
-.request-card.rejected {
+.request-card.Rejected {
   border-left-color: #e53e3e;
 }
 

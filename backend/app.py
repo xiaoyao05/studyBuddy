@@ -36,7 +36,7 @@ def get_current_user():
 # register new account
 @app.route("/register", methods=["POST"])
 def register_user():
-    email = request.json["email"]
+    email = request.json["email"].lower()
     password = request.json["password"]
     name = request.json["name"]
     course = request.json["course"]
@@ -63,7 +63,7 @@ def register_user():
 
 @app.route("/login", methods=["POST"])
 def login_user():
-    email = request.json["email"]
+    email = request.json["email"].lower()
     password = request.json["password"]
 
     user = Profile.query.filter_by(email=email).first()

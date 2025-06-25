@@ -166,8 +166,9 @@ const ProfileSetup = () => {
         const resp = await httpClient.post("/api/register", {
           ...formData
         });
-        navigate('/home');
-        alert('Profile setup completed successfully!');
+        navigate('/login');
+        alert('Profile setup completed successfully. Email verification sent!');
+        console.log(resp.data)
       } catch (error) {
         console.log("wrong");
         if (error.response?.status === 401) {

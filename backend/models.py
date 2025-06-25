@@ -17,6 +17,7 @@ class Profile(db.Model):
     year = db.Column(db.String(20), nullable=False)
     gender = db.Column(db.Enum("Male", "Female", "Other", name="gender_enum"), nullable=False)
     tele = db.Column(db.String(20), nullable=False, unique=True)
+    verified = db.Column(db.Boolean, nullable=False, default=False)
 
     requests = db.relationship("Request", backref="student", passive_deletes=True)
     joined_sessions = db.relationship("Participation", backref="student", passive_deletes=True)

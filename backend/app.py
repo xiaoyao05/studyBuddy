@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, url_for
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS, cross_origin
 from flask_session import Session
@@ -7,6 +7,9 @@ from models import db, Profile, StudySession, Request, Participation
 from datetime import datetime, date, time
 from sqlalchemy import func, and_, or_
 from models import StudySession, Participation
+
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
@@ -18,6 +21,9 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 @app.route("/@me", methods=["GET"])
 def get_current_user():
@@ -48,25 +54,43 @@ def register_user():
 
     if user_exists:
         return jsonify({"error": "User already exists"}), 409
+    
+    token = s.dumps(email, salt="email-confirm")
+    msg = Message("Confirm Email", sender="yeowh113@gmail.com", recipients=[email])
+    link = url_for("confirm_email", token=token, _external=True)
+    msg.body = "Your link is {}".format(link)
+    mail.send(msg)
 
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = Profile(email=email, password=hashed_password, name=name, course=course, year=year, gender=gender, tele=tele)
     db.session.add(new_user)
     db.session.commit()
     
-    session["user_id"] = new_user.id
+    # session["user_id"] = new_user.id
 
     return jsonify({
         "id": new_user.id,
         "email": new_user.email
     })
 
+@app.route("/confirm_email/<token>")
+def confirm_email(token):
+    try:
+        email = s.loads(token, salt="email-confirm", max_age=300)
+        user = Profile.query.filter_by(email=email).first()
+        user.verified = True
+        db.session.commit()
+
+    except SignatureExpired:
+        return "<h1>The token is expired!</h1>"
+    return "<h1>Email verified</h1>"
+
 @app.route("/login", methods=["POST"])
 def login_user():
     email = request.json["email"].lower()
     password = request.json["password"]
 
-    user = Profile.query.filter_by(email=email).first()
+    user = Profile.query.filter_by(email=email, verified=True).first()
 
     if user is None:
         return jsonify({"error": "Unauthorized"}), 401

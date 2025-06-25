@@ -170,11 +170,6 @@ def create_session():
     description = request.json["description"]
     module = request.json["module"]
 
-    session_exists = StudySession.query.filter_by(name=name).first() is not None
-
-    if session_exists:
-        return jsonify({"error": "Session name is used"}), 409
-
     new_session = StudySession(name=name, admin=user_id, groupSize=groupSize, date=date, startTime=startTime, endTime=endTime, location=location, description=description, module=module)
     db.session.add(new_session)
     db.session.commit()
